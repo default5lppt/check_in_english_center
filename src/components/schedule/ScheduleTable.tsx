@@ -129,6 +129,9 @@ export function ScheduleTable({
 							const dayLabel = Array.isArray(days)
 								? (days[dayIdx] ?? `Day ${dayIdx + 1}`)
 								: `Day ${dayIdx + 1}`;
+							const date = new Date(weekStart);
+							date.setDate(date.getDate() + dayIdx);
+							const dateLabel = `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}`;
 							return (
 								<th
 									className="border p-2 text-center font-semibold text-xs"
@@ -137,6 +140,7 @@ export function ScheduleTable({
 									style={{ borderColor: "var(--border)", color: "var(--text)" }}
 								>
 									{dayLabel}
+									<div className="font-normal text-xs" style={{ color: "var(--text-secondary)" }}>{dateLabel}</div>
 								</th>
 							);
 						})}
