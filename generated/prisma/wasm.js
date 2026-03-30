@@ -116,6 +116,22 @@ exports.Prisma.TeachingAssistantScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ClassScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  schoolId: 'schoolId',
+  order: 'order',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.RoomScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  schoolId: 'schoolId',
+  order: 'order',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.GlobalSettingScalarFieldEnum = {
   id: 'id',
   period1Start: 'period1Start'
@@ -134,11 +150,19 @@ exports.Prisma.ScheduleSessionScalarFieldEnum = {
   dayIndex: 'dayIndex',
   periodIndex: 'periodIndex',
   schoolId: 'schoolId',
-  teacherId: 'teacherId',
-  taId: 'taId',
-  note: 'note',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClassEntryScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  teacherId: 'teacherId',
+  taId: 'taId',
+  classId: 'classId',
+  roomId: 'roomId',
+  order: 'order',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -165,6 +189,18 @@ exports.Prisma.TeachingAssistantOrderByRelevanceFieldEnum = {
   color: 'color'
 };
 
+exports.Prisma.ClassOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  schoolId: 'schoolId'
+};
+
+exports.Prisma.RoomOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  schoolId: 'schoolId'
+};
+
 exports.Prisma.GlobalSettingOrderByRelevanceFieldEnum = {
   id: 'id',
   period1Start: 'period1Start'
@@ -177,18 +213,24 @@ exports.Prisma.SchoolTimingOrderByRelevanceFieldEnum = {
   period3Start: 'period3Start'
 };
 
+exports.Prisma.ScheduleSessionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  weekStart: 'weekStart',
+  schoolId: 'schoolId'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
 
-exports.Prisma.ScheduleSessionOrderByRelevanceFieldEnum = {
+exports.Prisma.ClassEntryOrderByRelevanceFieldEnum = {
   id: 'id',
-  weekStart: 'weekStart',
-  schoolId: 'schoolId',
+  sessionId: 'sessionId',
   teacherId: 'teacherId',
   taId: 'taId',
-  note: 'note'
+  classId: 'classId',
+  roomId: 'roomId'
 };
 
 
@@ -196,9 +238,12 @@ exports.Prisma.ModelName = {
   School: 'School',
   Teacher: 'Teacher',
   TeachingAssistant: 'TeachingAssistant',
+  Class: 'Class',
+  Room: 'Room',
   GlobalSetting: 'GlobalSetting',
   SchoolTiming: 'SchoolTiming',
-  ScheduleSession: 'ScheduleSession'
+  ScheduleSession: 'ScheduleSession',
+  ClassEntry: 'ClassEntry'
 };
 /**
  * Create the Client
@@ -239,6 +284,7 @@ const config = {
     "db"
   ],
   "activeProvider": "mysql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -247,13 +293,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel School {\n  id        String   @id @default(cuid())\n  name      String\n  color     String\n  bg        String\n  order     Int      @default(0)\n  createdAt DateTime @default(now())\n\n  timings  SchoolTiming[]\n  sessions ScheduleSession[]\n}\n\nmodel Teacher {\n  id        String   @id @default(cuid())\n  name      String\n  color     String\n  createdAt DateTime @default(now())\n\n  sessions ScheduleSession[]\n}\n\nmodel TeachingAssistant {\n  id        String   @id @default(cuid())\n  name      String\n  color     String\n  createdAt DateTime @default(now())\n\n  sessions ScheduleSession[]\n}\n\nmodel GlobalSetting {\n  id           String @id @default(\"singleton\")\n  period1Start String @default(\"14:00\")\n}\n\nmodel SchoolTiming {\n  id           String @id @default(cuid())\n  schoolId     String @unique\n  school       School @relation(fields: [schoolId], references: [id], onDelete: Cascade)\n  period2Start String\n  period3Start String\n}\n\nmodel ScheduleSession {\n  id          String             @id @default(cuid())\n  weekStart   String\n  dayIndex    Int\n  periodIndex Int\n  schoolId    String\n  school      School             @relation(fields: [schoolId], references: [id], onDelete: Cascade)\n  teacherId   String?\n  teacher     Teacher?           @relation(fields: [teacherId], references: [id], onDelete: SetNull)\n  taId        String?\n  ta          TeachingAssistant? @relation(fields: [taId], references: [id], onDelete: SetNull)\n  note        String?            @db.Text\n  createdAt   DateTime           @default(now())\n  updatedAt   DateTime           @updatedAt\n\n  @@unique([weekStart, dayIndex, periodIndex, schoolId])\n}\n",
-  "inlineSchemaHash": "993abb2524a56b1edf88df7cbbb768c3eab4aeef7f1654f237be4046eda0660b",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel School {\n  id        String   @id @default(cuid())\n  name      String\n  color     String\n  bg        String\n  order     Int      @default(0)\n  createdAt DateTime @default(now())\n\n  timings  SchoolTiming[]\n  sessions ScheduleSession[]\n  classes  Class[]\n  rooms    Room[]\n}\n\nmodel Teacher {\n  id        String   @id @default(cuid())\n  name      String\n  color     String\n  createdAt DateTime @default(now())\n\n  entries ClassEntry[]\n}\n\nmodel TeachingAssistant {\n  id        String   @id @default(cuid())\n  name      String\n  color     String\n  createdAt DateTime @default(now())\n\n  entries ClassEntry[]\n}\n\nmodel Class {\n  id        String   @id @default(cuid())\n  name      String\n  schoolId  String\n  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)\n  order     Int      @default(0)\n  createdAt DateTime @default(now())\n\n  entries ClassEntry[]\n\n  @@unique([name, schoolId])\n}\n\nmodel Room {\n  id        String   @id @default(cuid())\n  name      String\n  schoolId  String\n  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)\n  order     Int      @default(0)\n  createdAt DateTime @default(now())\n\n  entries ClassEntry[]\n\n  @@unique([name, schoolId])\n}\n\nmodel GlobalSetting {\n  id           String @id @default(\"singleton\")\n  period1Start String @default(\"14:00\")\n}\n\nmodel SchoolTiming {\n  id           String @id @default(cuid())\n  schoolId     String @unique\n  school       School @relation(fields: [schoolId], references: [id], onDelete: Cascade)\n  period2Start String\n  period3Start String\n}\n\nmodel ScheduleSession {\n  id          String   @id @default(cuid())\n  weekStart   String\n  dayIndex    Int\n  periodIndex Int\n  schoolId    String\n  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  entries ClassEntry[]\n\n  @@unique([weekStart, dayIndex, periodIndex, schoolId])\n}\n\nmodel ClassEntry {\n  id        String             @id @default(cuid())\n  sessionId String\n  session   ScheduleSession    @relation(fields: [sessionId], references: [id], onDelete: Cascade)\n  teacherId String?\n  teacher   Teacher?           @relation(fields: [teacherId], references: [id], onDelete: SetNull)\n  taId      String?\n  ta        TeachingAssistant? @relation(fields: [taId], references: [id], onDelete: SetNull)\n  classId   String?\n  class     Class?             @relation(fields: [classId], references: [id], onDelete: SetNull)\n  roomId    String?\n  room      Room?              @relation(fields: [roomId], references: [id], onDelete: SetNull)\n  order     Int                @default(0)\n  createdAt DateTime           @default(now())\n}\n",
+  "inlineSchemaHash": "fadbd6c491924d7066c6200c46ef46ecc72b4ad7fdda2dfe66d882aa36346c34",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"School\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"color\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bg\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"order\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"timings\",\"kind\":\"object\",\"type\":\"SchoolTiming\",\"relationName\":\"SchoolToSchoolTiming\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"ScheduleSession\",\"relationName\":\"ScheduleSessionToSchool\"}],\"dbName\":null},\"Teacher\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"color\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"ScheduleSession\",\"relationName\":\"ScheduleSessionToTeacher\"}],\"dbName\":null},\"TeachingAssistant\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"color\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"ScheduleSession\",\"relationName\":\"ScheduleSessionToTeachingAssistant\"}],\"dbName\":null},\"GlobalSetting\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"period1Start\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"SchoolTiming\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"schoolId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"school\",\"kind\":\"object\",\"type\":\"School\",\"relationName\":\"SchoolToSchoolTiming\"},{\"name\":\"period2Start\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"period3Start\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"ScheduleSession\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"weekStart\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"dayIndex\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"periodIndex\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"schoolId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"school\",\"kind\":\"object\",\"type\":\"School\",\"relationName\":\"ScheduleSessionToSchool\"},{\"name\":\"teacherId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"teacher\",\"kind\":\"object\",\"type\":\"Teacher\",\"relationName\":\"ScheduleSessionToTeacher\"},{\"name\":\"taId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"ta\",\"kind\":\"object\",\"type\":\"TeachingAssistant\",\"relationName\":\"ScheduleSessionToTeachingAssistant\"},{\"name\":\"note\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"School\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"color\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bg\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"order\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"timings\",\"kind\":\"object\",\"type\":\"SchoolTiming\",\"relationName\":\"SchoolToSchoolTiming\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"ScheduleSession\",\"relationName\":\"ScheduleSessionToSchool\"},{\"name\":\"classes\",\"kind\":\"object\",\"type\":\"Class\",\"relationName\":\"ClassToSchool\"},{\"name\":\"rooms\",\"kind\":\"object\",\"type\":\"Room\",\"relationName\":\"RoomToSchool\"}],\"dbName\":null},\"Teacher\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"color\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"entries\",\"kind\":\"object\",\"type\":\"ClassEntry\",\"relationName\":\"ClassEntryToTeacher\"}],\"dbName\":null},\"TeachingAssistant\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"color\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"entries\",\"kind\":\"object\",\"type\":\"ClassEntry\",\"relationName\":\"ClassEntryToTeachingAssistant\"}],\"dbName\":null},\"Class\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"schoolId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"school\",\"kind\":\"object\",\"type\":\"School\",\"relationName\":\"ClassToSchool\"},{\"name\":\"order\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"entries\",\"kind\":\"object\",\"type\":\"ClassEntry\",\"relationName\":\"ClassToClassEntry\"}],\"dbName\":null},\"Room\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"schoolId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"school\",\"kind\":\"object\",\"type\":\"School\",\"relationName\":\"RoomToSchool\"},{\"name\":\"order\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"entries\",\"kind\":\"object\",\"type\":\"ClassEntry\",\"relationName\":\"ClassEntryToRoom\"}],\"dbName\":null},\"GlobalSetting\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"period1Start\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"SchoolTiming\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"schoolId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"school\",\"kind\":\"object\",\"type\":\"School\",\"relationName\":\"SchoolToSchoolTiming\"},{\"name\":\"period2Start\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"period3Start\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"ScheduleSession\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"weekStart\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"dayIndex\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"periodIndex\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"schoolId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"school\",\"kind\":\"object\",\"type\":\"School\",\"relationName\":\"ScheduleSessionToSchool\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"entries\",\"kind\":\"object\",\"type\":\"ClassEntry\",\"relationName\":\"ClassEntryToScheduleSession\"}],\"dbName\":null},\"ClassEntry\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sessionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"session\",\"kind\":\"object\",\"type\":\"ScheduleSession\",\"relationName\":\"ClassEntryToScheduleSession\"},{\"name\":\"teacherId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"teacher\",\"kind\":\"object\",\"type\":\"Teacher\",\"relationName\":\"ClassEntryToTeacher\"},{\"name\":\"taId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"ta\",\"kind\":\"object\",\"type\":\"TeachingAssistant\",\"relationName\":\"ClassEntryToTeachingAssistant\"},{\"name\":\"classId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"class\",\"kind\":\"object\",\"type\":\"Class\",\"relationName\":\"ClassToClassEntry\"},{\"name\":\"roomId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"room\",\"kind\":\"object\",\"type\":\"Room\",\"relationName\":\"ClassEntryToRoom\"},{\"name\":\"order\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -8,7 +9,16 @@ export const teacherRouter = createTRPCRouter({
 
 	create: publicProcedure
 		.input(z.object({ name: z.string().min(1), color: z.string() }))
-		.mutation(({ ctx, input }) => {
+		.mutation(async ({ ctx, input }) => {
+			const existing = await ctx.db.teacher.findFirst({
+				where: { name: { equals: input.name } },
+			});
+			if (existing) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Tên "${input.name}" đã tồn tại. Hãy phân biệt tên (VD: Phúc ${input.name}, Đức ${input.name} hoặc ${input.name}(A))`,
+				});
+			}
 			return ctx.db.teacher.create({
 				data: { name: input.name, color: input.color },
 			});
@@ -18,7 +28,16 @@ export const teacherRouter = createTRPCRouter({
 		.input(
 			z.object({ id: z.string(), name: z.string().min(1), color: z.string() }),
 		)
-		.mutation(({ ctx, input }) => {
+		.mutation(async ({ ctx, input }) => {
+			const existing = await ctx.db.teacher.findFirst({
+				where: { name: { equals: input.name }, NOT: { id: input.id } },
+			});
+			if (existing) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Tên "${input.name}" đã tồn tại. Hãy phân biệt tên (VD: Phúc ${input.name}, Đức ${input.name} hoặc ${input.name}(A))`,
+				});
+			}
 			return ctx.db.teacher.update({
 				where: { id: input.id },
 				data: { name: input.name, color: input.color },

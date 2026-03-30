@@ -144,6 +144,22 @@ exports.Prisma.TeachingAssistantScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ClassScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  schoolId: 'schoolId',
+  order: 'order',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.RoomScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  schoolId: 'schoolId',
+  order: 'order',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.GlobalSettingScalarFieldEnum = {
   id: 'id',
   period1Start: 'period1Start'
@@ -162,11 +178,19 @@ exports.Prisma.ScheduleSessionScalarFieldEnum = {
   dayIndex: 'dayIndex',
   periodIndex: 'periodIndex',
   schoolId: 'schoolId',
-  teacherId: 'teacherId',
-  taId: 'taId',
-  note: 'note',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClassEntryScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  teacherId: 'teacherId',
+  taId: 'taId',
+  classId: 'classId',
+  roomId: 'roomId',
+  order: 'order',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -193,6 +217,18 @@ exports.Prisma.TeachingAssistantOrderByRelevanceFieldEnum = {
   color: 'color'
 };
 
+exports.Prisma.ClassOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  schoolId: 'schoolId'
+};
+
+exports.Prisma.RoomOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  schoolId: 'schoolId'
+};
+
 exports.Prisma.GlobalSettingOrderByRelevanceFieldEnum = {
   id: 'id',
   period1Start: 'period1Start'
@@ -205,18 +241,24 @@ exports.Prisma.SchoolTimingOrderByRelevanceFieldEnum = {
   period3Start: 'period3Start'
 };
 
+exports.Prisma.ScheduleSessionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  weekStart: 'weekStart',
+  schoolId: 'schoolId'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
 
-exports.Prisma.ScheduleSessionOrderByRelevanceFieldEnum = {
+exports.Prisma.ClassEntryOrderByRelevanceFieldEnum = {
   id: 'id',
-  weekStart: 'weekStart',
-  schoolId: 'schoolId',
+  sessionId: 'sessionId',
   teacherId: 'teacherId',
   taId: 'taId',
-  note: 'note'
+  classId: 'classId',
+  roomId: 'roomId'
 };
 
 
@@ -224,9 +266,12 @@ exports.Prisma.ModelName = {
   School: 'School',
   Teacher: 'Teacher',
   TeachingAssistant: 'TeachingAssistant',
+  Class: 'Class',
+  Room: 'Room',
   GlobalSetting: 'GlobalSetting',
   SchoolTiming: 'SchoolTiming',
-  ScheduleSession: 'ScheduleSession'
+  ScheduleSession: 'ScheduleSession',
+  ClassEntry: 'ClassEntry'
 };
 
 /**

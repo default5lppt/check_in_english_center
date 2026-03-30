@@ -2,109 +2,136 @@
 
 import { useEffect, useState } from "react";
 import { useToast } from "~/components/Toast";
-import { useLang } from "~/contexts/LangContext";
 import { api } from "~/trpc/react";
 
-interface CellInfo {
+interface EntryData {
+	id: string;
+	teacherId: string | null;
+	taId: string | null;
+	classId: string | null;
+	roomId: string | null;
+}
+
+interface CellTarget {
 	weekStart: string;
 	dayIndex: number;
 	periodIndex: number;
 	schoolId: string;
 	schoolName: string;
 	dayLabel: string;
-	currentSession?: {
-		teacherId: string | null;
-		taId: string | null;
-		note: string | null;
-	} | null;
+}
+
+export interface EditCellModalState {
+	cell: CellTarget;
+	entry?: EntryData | null;
 }
 
 interface EditCellModalProps {
-	cell: CellInfo | null;
+	state: EditCellModalState | null;
 	onClose: () => void;
 	onSaved: () => void;
 }
 
-export function EditCellModal({ cell, onClose, onSaved }: EditCellModalProps) {
-	const { t } = useLang();
+export function EditCellModal({ state, onClose, onSaved }: EditCellModalProps) {
 	const { showToast } = useToast();
 
 	const [teacherId, setTeacherId] = useState<string>("");
 	const [taId, setTaId] = useState<string>("");
-	const [note, setNote] = useState("");
+	const [classId, setClassId] = useState<string>("");
+	const [roomId, setRoomId] = useState<string>("");
 
 	const teachersQuery = api.teacher.getAll.useQuery();
 	const tasQuery = api.ta.getAll.useQuery();
+	const classesQuery = api.class.getBySchool.useQuery(
+		{ schoolId: state?.cell.schoolId ?? "" },
+		{ enabled: !!state },
+	);
+	const roomsQuery = api.room.getBySchool.useQuery(
+		{ schoolId: state?.cell.schoolId ?? "" },
+		{ enabled: !!state },
+	);
 
 	const utils = api.useUtils();
 
-	const upsertMutation = api.schedule.upsertSession.useMutation({
+	const addMutation = api.schedule.addEntry.useMutation({
 		onSuccess: async () => {
 			await utils.schedule.invalidate();
-			showToast(t("toast.saved"), "success");
+			showToast("✅ Đã thêm lớp", "success");
 			onSaved();
 			onClose();
 		},
-		onError: () => showToast("Lỗi khi lưu", "error"),
+		onError: (err) => showToast(err.message, "error"),
 	});
 
-	const deleteMutation = api.schedule.deleteSession.useMutation({
+	const updateMutation = api.schedule.updateEntry.useMutation({
 		onSuccess: async () => {
 			await utils.schedule.invalidate();
-			showToast(t("toast.deleted"), "success");
+			showToast("✅ Đã cập nhật", "success");
 			onSaved();
 			onClose();
 		},
-		onError: () => showToast("Lỗi khi xoá", "error"),
+		onError: (err) => showToast(err.message, "error"),
+	});
+
+	const deleteMutation = api.schedule.deleteEntry.useMutation({
+		onSuccess: async () => {
+			await utils.schedule.invalidate();
+			showToast("Đã xoá lớp", "success");
+			onSaved();
+			onClose();
+		},
+		onError: (err) => showToast(err.message, "error"),
 	});
 
 	useEffect(() => {
-		if (cell) {
-			setTeacherId(cell.currentSession?.teacherId ?? "");
-			setTaId(cell.currentSession?.taId ?? "");
-			setNote(cell.currentSession?.note ?? "");
+		if (state) {
+			setTeacherId(state.entry?.teacherId ?? "");
+			setTaId(state.entry?.taId ?? "");
+			setClassId(state.entry?.classId ?? "");
+			setRoomId(state.entry?.roomId ?? "");
 		}
-	}, [cell]);
+	}, [state]);
 
 	useEffect(() => {
 		const handleKey = (e: KeyboardEvent) => {
 			if (e.key === "Escape") onClose();
 		};
-		if (cell) document.addEventListener("keydown", handleKey);
+		if (state) document.addEventListener("keydown", handleKey);
 		return () => document.removeEventListener("keydown", handleKey);
-	}, [cell, onClose]);
+	}, [state, onClose]);
 
-	if (!cell) return null;
+	if (!state) return null;
 
-	const periodLabel = t("schedule.period", { n: String(cell.periodIndex + 1) });
-	const title = t("cell.editTitle", {
-		period: String(cell.periodIndex + 1),
-		school: cell.schoolName,
-		day: cell.dayLabel,
-	});
+	const { cell, entry } = state;
+	const isEditing = !!entry;
+	const title = isEditing
+		? `Sửa lớp · Tiết ${cell.periodIndex + 1} · ${cell.schoolName} · ${cell.dayLabel}`
+		: `Thêm lớp · Tiết ${cell.periodIndex + 1} · ${cell.schoolName} · ${cell.dayLabel}`;
 
 	const handleSave = () => {
-		upsertMutation.mutate({
+		const payload = {
 			weekStart: cell.weekStart,
 			dayIndex: cell.dayIndex,
 			periodIndex: cell.periodIndex,
 			schoolId: cell.schoolId,
 			teacherId: teacherId || null,
 			taId: taId || null,
-			note: note.trim() || null,
-		});
+			classId: classId || null,
+			roomId: roomId || null,
+		};
+		if (isEditing) {
+			updateMutation.mutate({ entryId: entry.id, ...payload });
+		} else {
+			addMutation.mutate(payload);
+		}
 	};
 
 	const handleDelete = () => {
-		deleteMutation.mutate({
-			weekStart: cell.weekStart,
-			dayIndex: cell.dayIndex,
-			periodIndex: cell.periodIndex,
-			schoolId: cell.schoolId,
-		});
+		if (!entry) return;
+		deleteMutation.mutate({ entryId: entry.id });
 	};
 
-	void periodLabel;
+	const isPending = addMutation.isPending || updateMutation.isPending;
 
 	return (
 		// biome-ignore lint/a11y/noStaticElementInteractions: modal backdrop intentional
@@ -121,10 +148,7 @@ export function EditCellModal({ cell, onClose, onSaved }: EditCellModalProps) {
 				role="dialog"
 				style={{ background: "var(--surface)" }}
 			>
-				<h3
-					className="mb-4 font-bold text-base"
-					style={{ color: "var(--text)" }}
-				>
+				<h3 className="mb-4 font-bold text-base" style={{ color: "var(--text)" }}>
 					{title}
 				</h3>
 
@@ -132,22 +156,22 @@ export function EditCellModal({ cell, onClose, onSaved }: EditCellModalProps) {
 				<div className="mb-3">
 					<label
 						className="mb-1 block font-medium text-sm"
-						htmlFor="cell-teacher"
+						htmlFor="entry-teacher"
 						style={{ color: "var(--text-secondary)" }}
 					>
-						{t("cell.teacher")}
+						Giáo viên
 					</label>
 					<select
 						className="w-full rounded-lg border px-3 py-2 text-sm"
-						id="cell-teacher"
+						id="entry-teacher"
 						onChange={(e) => setTeacherId(e.target.value)}
 						style={{ border: "1px solid var(--border)" }}
 						value={teacherId}
 					>
-						<option value="">{t("cell.selectTeacher")}</option>
-						{teachersQuery.data?.map((teacher) => (
-							<option key={teacher.id} value={teacher.id}>
-								{teacher.name}
+						<option value="">-- Chọn giáo viên --</option>
+						{teachersQuery.data?.map((t) => (
+							<option key={t.id} value={t.id}>
+								{t.name}
 							</option>
 						))}
 					</select>
@@ -157,19 +181,19 @@ export function EditCellModal({ cell, onClose, onSaved }: EditCellModalProps) {
 				<div className="mb-3">
 					<label
 						className="mb-1 block font-medium text-sm"
-						htmlFor="cell-ta"
+						htmlFor="entry-ta"
 						style={{ color: "var(--text-secondary)" }}
 					>
-						{t("cell.ta")}
+						Trợ giảng
 					</label>
 					<select
 						className="w-full rounded-lg border px-3 py-2 text-sm"
-						id="cell-ta"
+						id="entry-ta"
 						onChange={(e) => setTaId(e.target.value)}
 						style={{ border: "1px solid var(--border)" }}
 						value={taId}
 					>
-						<option value="">{t("cell.selectTA")}</option>
+						<option value="">-- Chọn trợ giảng --</option>
 						{tasQuery.data?.map((ta) => (
 							<option key={ta.id} value={ta.id}>
 								{ta.name}
@@ -178,36 +202,68 @@ export function EditCellModal({ cell, onClose, onSaved }: EditCellModalProps) {
 					</select>
 				</div>
 
-				{/* Note */}
+				{/* Class */}
+				<div className="mb-3">
+					<label
+						className="mb-1 block font-medium text-sm"
+						htmlFor="entry-class"
+						style={{ color: "var(--text-secondary)" }}
+					>
+						Lớp
+					</label>
+					<select
+						className="w-full rounded-lg border px-3 py-2 text-sm"
+						id="entry-class"
+						onChange={(e) => setClassId(e.target.value)}
+						style={{ border: "1px solid var(--border)" }}
+						value={classId}
+					>
+						<option value="">-- Chọn lớp --</option>
+						{classesQuery.data?.map((c) => (
+							<option key={c.id} value={c.id}>
+								{c.name}
+							</option>
+						))}
+					</select>
+				</div>
+
+				{/* Room */}
 				<div className="mb-5">
 					<label
 						className="mb-1 block font-medium text-sm"
-						htmlFor="cell-note"
+						htmlFor="entry-room"
 						style={{ color: "var(--text-secondary)" }}
 					>
-						{t("cell.note")}
+						Phòng
 					</label>
-					<textarea
+					<select
 						className="w-full rounded-lg border px-3 py-2 text-sm"
-						id="cell-note"
-						onChange={(e) => setNote(e.target.value)}
-						placeholder={t("cell.notePlaceholder")}
-						rows={2}
-						style={{ border: "1px solid var(--border)", resize: "vertical" }}
-						value={note}
-					/>
+						id="entry-room"
+						onChange={(e) => setRoomId(e.target.value)}
+						style={{ border: "1px solid var(--border)" }}
+						value={roomId}
+					>
+						<option value="">-- Chọn phòng --</option>
+						{roomsQuery.data?.map((r) => (
+							<option key={r.id} value={r.id}>
+								{r.name}
+							</option>
+						))}
+					</select>
 				</div>
 
 				<div className="flex gap-2">
-					<button
-						className="rounded-lg px-4 py-2 font-medium text-sm text-white disabled:opacity-50"
-						disabled={deleteMutation.isPending}
-						onClick={handleDelete}
-						style={{ background: "var(--danger)" }}
-						type="button"
-					>
-						{t("cell.delete")}
-					</button>
+					{isEditing && (
+						<button
+							className="rounded-lg px-4 py-2 font-medium text-sm text-white disabled:opacity-50"
+							disabled={deleteMutation.isPending}
+							onClick={handleDelete}
+							style={{ background: "var(--danger)" }}
+							type="button"
+						>
+							Xoá
+						</button>
+					)}
 					<div className="flex-1" />
 					<button
 						className="rounded-lg px-4 py-2 font-medium text-sm"
@@ -218,16 +274,16 @@ export function EditCellModal({ cell, onClose, onSaved }: EditCellModalProps) {
 						}}
 						type="button"
 					>
-						{t("cell.cancel")}
+						Huỷ
 					</button>
 					<button
 						className="rounded-lg px-4 py-2 font-medium text-sm text-white disabled:opacity-50"
-						disabled={upsertMutation.isPending}
+						disabled={isPending}
 						onClick={handleSave}
 						style={{ background: "var(--primary)" }}
 						type="button"
 					>
-						{t("cell.save")}
+						Lưu
 					</button>
 				</div>
 			</div>

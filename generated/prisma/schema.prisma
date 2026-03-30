@@ -18,6 +18,8 @@ model School {
 
   timings  SchoolTiming[]
   sessions ScheduleSession[]
+  classes  Class[]
+  rooms    Room[]
 }
 
 model Teacher {
@@ -26,7 +28,7 @@ model Teacher {
   color     String
   createdAt DateTime @default(now())
 
-  sessions ScheduleSession[]
+  entries ClassEntry[]
 }
 
 model TeachingAssistant {
@@ -35,7 +37,33 @@ model TeachingAssistant {
   color     String
   createdAt DateTime @default(now())
 
-  sessions ScheduleSession[]
+  entries ClassEntry[]
+}
+
+model Class {
+  id        String   @id @default(cuid())
+  name      String
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  entries ClassEntry[]
+
+  @@unique([name, schoolId])
+}
+
+model Room {
+  id        String   @id @default(cuid())
+  name      String
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  entries ClassEntry[]
+
+  @@unique([name, schoolId])
 }
 
 model GlobalSetting {
@@ -52,19 +80,32 @@ model SchoolTiming {
 }
 
 model ScheduleSession {
-  id          String             @id @default(cuid())
+  id          String   @id @default(cuid())
   weekStart   String
   dayIndex    Int
   periodIndex Int
   schoolId    String
-  school      School             @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  teacherId   String?
-  teacher     Teacher?           @relation(fields: [teacherId], references: [id], onDelete: SetNull)
-  taId        String?
-  ta          TeachingAssistant? @relation(fields: [taId], references: [id], onDelete: SetNull)
-  note        String?            @db.Text
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  entries ClassEntry[]
 
   @@unique([weekStart, dayIndex, periodIndex, schoolId])
+}
+
+model ClassEntry {
+  id        String             @id @default(cuid())
+  sessionId String
+  session   ScheduleSession    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  teacherId String?
+  teacher   Teacher?           @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  taId      String?
+  ta        TeachingAssistant? @relation(fields: [taId], references: [id], onDelete: SetNull)
+  classId   String?
+  class     Class?             @relation(fields: [classId], references: [id], onDelete: SetNull)
+  roomId    String?
+  room      Room?              @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  order     Int                @default(0)
+  createdAt DateTime           @default(now())
 }

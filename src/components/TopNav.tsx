@@ -13,6 +13,8 @@ const TAB_KEYS = [
 	{ icon: "🧑‍💼", key: "nav.tas" },
 	{ icon: "⚙️", key: "nav.settings" },
 	{ icon: "🏫", key: "nav.schools" },
+	{ icon: "🎒", key: "nav.classes" },
+	{ icon: "🚪", key: "nav.rooms" },
 ] as const;
 
 export function TopNav({ activeTab, onTabChange }: TopNavProps) {

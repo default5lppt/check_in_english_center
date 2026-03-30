@@ -17,27 +17,35 @@ interface SchoolTiming {
 	period3Start: string;
 }
 
+interface Entry {
+	id: string;
+	teacherId: string | null;
+	taId: string | null;
+	classId: string | null;
+	roomId: string | null;
+	teacher?: { id: string; name: string; color: string } | null;
+	ta?: { id: string; name: string; color: string } | null;
+	class?: { id: string; name: string } | null;
+	room?: { id: string; name: string } | null;
+	order: number;
+}
+
 interface Session {
 	id: string;
 	weekStart: string;
 	dayIndex: number;
 	periodIndex: number;
 	schoolId: string;
-	teacherId: string | null;
-	taId: string | null;
-	note: string | null;
-	teacher?: { id: string; name: string; color: string } | null;
-	ta?: { id: string; name: string; color: string } | null;
+	entries: Entry[];
 }
 
-interface CellInfo {
+interface CellTarget {
 	weekStart: string;
 	dayIndex: number;
 	periodIndex: number;
 	schoolId: string;
 	schoolName: string;
 	dayLabel: string;
-	currentSession?: Session | null;
 }
 
 interface ScheduleTableProps {
@@ -46,7 +54,8 @@ interface ScheduleTableProps {
 	sessions: Session[];
 	period1Start: string;
 	schoolTimings: SchoolTiming[];
-	onCellClick: (cell: CellInfo) => void;
+	onAddEntry: (cell: CellTarget) => void;
+	onEditEntry: (entry: Entry, cell: CellTarget) => void;
 }
 
 const PERIOD_COUNT = 3;
@@ -57,48 +66,51 @@ export function ScheduleTable({
 	sessions,
 	period1Start,
 	schoolTimings,
-	onCellClick,
+	onAddEntry,
+	onEditEntry,
 }: ScheduleTableProps) {
 	const { t, tArr } = useLang();
 
-	// Build O(1) lookup map
+	// Build lookup map: key → session (with entries)
 	const sessionMap = new Map<string, Session>();
 	for (const s of sessions) {
 		const key = `${s.weekStart}-${s.dayIndex}-${s.periodIndex}-${s.schoolId}`;
 		sessionMap.set(key, s);
 	}
 
-	// Conflict detection: same teacher or TA in same (day, period) across schools
+	// Conflict detection: same teacherId or taId across schools in same (day, period)
 	const conflictKeys = new Set<string>();
 	for (let day = 0; day < 5; day++) {
 		for (let period = 0; period < PERIOD_COUNT; period++) {
-			const teacherIds: string[] = [];
-			const taIds: string[] = [];
-			const cellKeys: string[] = [];
+			const allTeacherIds: string[] = [];
+			const allTaIds: string[] = [];
+			const cellEntryMap = new Map<string, { teacherIds: string[]; taIds: string[] }>();
+
 			for (const school of schools) {
 				const key = `${weekStart}-${day}-${period}-${school.id}`;
 				const session = sessionMap.get(key);
-				cellKeys.push(key);
-				if (session?.teacherId) teacherIds.push(session.teacherId);
-				if (session?.taId) taIds.push(session.taId);
+				const tIds = (session?.entries ?? []).map((e) => e.teacherId).filter(Boolean) as string[];
+				const aIds = (session?.entries ?? []).map((e) => e.taId).filter(Boolean) as string[];
+				cellEntryMap.set(key, { teacherIds: tIds, taIds: aIds });
+				allTeacherIds.push(...tIds);
+				allTaIds.push(...aIds);
 			}
-			const teacherSet = new Set(teacherIds);
-			const taSet = new Set(taIds);
-			const hasTeacherConflict = teacherIds.length !== teacherSet.size;
-			const hasTAConflict = taIds.length !== taSet.size;
-			if (hasTeacherConflict || hasTAConflict) {
-				for (const k of cellKeys) {
-					const s = sessionMap.get(k);
-					if (s) {
-						const tId = s.teacherId;
-						const aId = s.taId;
-						const isConflict =
-							(tId !== null &&
-								teacherIds.filter((id) => id === tId).length > 1) ||
-							(aId !== null && taIds.filter((id) => id === aId).length > 1);
-						if (isConflict) conflictKeys.add(k);
-					}
-				}
+
+			const conflictTeacherIds = new Set(
+				allTeacherIds.filter((id, i) => allTeacherIds.indexOf(id) !== i),
+			);
+			const conflictTaIds = new Set(
+				allTaIds.filter((id, i) => allTaIds.indexOf(id) !== i),
+			);
+
+			for (const school of schools) {
+				const key = `${weekStart}-${day}-${period}-${school.id}`;
+				const cell = cellEntryMap.get(key);
+				if (!cell) continue;
+				const hasConflict =
+					cell.teacherIds.some((id) => conflictTeacherIds.has(id)) ||
+					cell.taIds.some((id) => conflictTaIds.has(id));
+				if (hasConflict) conflictKeys.add(key);
 			}
 		}
 	}
@@ -112,7 +124,6 @@ export function ScheduleTable({
 		>
 			<table className="w-full border-collapse text-sm">
 				<thead>
-					{/* Row 1: Day headers */}
 					<tr style={{ background: "var(--surface-alt)" }}>
 						<th
 							className="border p-2 text-center font-semibold text-xs"
@@ -138,12 +149,13 @@ export function ScheduleTable({
 									style={{ borderColor: "var(--border)", color: "var(--text)" }}
 								>
 									{dayLabel}
-									<div className="font-normal text-xs" style={{ color: "var(--text-secondary)" }}>{dateLabel}</div>
+									<div className="font-normal text-xs" style={{ color: "var(--text-secondary)" }}>
+										{dateLabel}
+									</div>
 								</th>
 							);
 						})}
 					</tr>
-					{/* Row 2: School sub-headers */}
 					<tr style={{ background: "var(--surface-alt)" }}>
 						{[0, 1, 2, 3, 4].flatMap((dayIdx) =>
 							schools.map((school) => (
@@ -154,7 +166,7 @@ export function ScheduleTable({
 										borderColor: "var(--border)",
 										background: school.bg,
 										color: school.color,
-										minWidth: "120px",
+										minWidth: "130px",
 									}}
 								>
 									{school.name}
@@ -176,27 +188,27 @@ export function ScheduleTable({
 							{[0, 1, 2, 3, 4].flatMap((dayIdx) =>
 								schools.map((school) => {
 									const key = `${weekStart}-${dayIdx}-${periodIdx}-${school.id}`;
-									const session = sessionMap.get(key) ?? null;
+									const session = sessionMap.get(key);
+									const entries = session?.entries ?? [];
 									const isConflict = conflictKeys.has(key);
 									const dayLabel = days[dayIdx] ?? `Thứ ${dayIdx + 2}`;
+									const cellTarget: CellTarget = {
+										weekStart,
+										dayIndex: dayIdx,
+										periodIndex: periodIdx,
+										schoolId: school.id,
+										schoolName: school.name,
+										dayLabel,
+									};
 									return (
 										<ScheduleCell
 											conflictLabel={t("schedule.conflictBadge")}
+											entries={entries}
 											isConflict={isConflict}
 											key={key}
-											onClick={() =>
-												onCellClick({
-													weekStart,
-													dayIndex: dayIdx,
-													periodIndex: periodIdx,
-													schoolId: school.id,
-													schoolName: school.name,
-													dayLabel,
-													currentSession: session,
-												})
-											}
+											onAddEntry={() => onAddEntry(cellTarget)}
+											onEditEntry={(entry) => onEditEntry(entry, cellTarget)}
 											school={school}
-											session={session}
 										/>
 									);
 								}),

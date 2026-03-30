@@ -29,6 +29,7 @@ export function StaffPanel({ mode }: StaffPanelProps) {
 			showToast(t("toast.added", { name: item.name }), "success");
 			setInputName("");
 		},
+		onError: (err) => showToast(err.message, "error"),
 	});
 	const createTA = api.ta.create.useMutation({
 		onSuccess: async (item) => {
@@ -36,6 +37,7 @@ export function StaffPanel({ mode }: StaffPanelProps) {
 			showToast(t("toast.added", { name: item.name }), "success");
 			setInputName("");
 		},
+		onError: (err) => showToast(err.message, "error"),
 	});
 
 	const updateTeacher = api.teacher.update.useMutation({
@@ -43,12 +45,14 @@ export function StaffPanel({ mode }: StaffPanelProps) {
 			await utils.teacher.invalidate();
 			showToast(t("toast.updated"), "success");
 		},
+		onError: (err) => showToast(err.message, "error"),
 	});
 	const updateTA = api.ta.update.useMutation({
 		onSuccess: async () => {
 			await utils.ta.invalidate();
 			showToast(t("toast.updated"), "success");
 		},
+		onError: (err) => showToast(err.message, "error"),
 	});
 
 	const deleteTeacher = api.teacher.delete.useMutation({

@@ -1,11 +1,16 @@
 "use client";
 
-interface Session {
+interface Entry {
+	id: string;
 	teacherId: string | null;
 	taId: string | null;
-	note: string | null;
-	teacher?: { name: string; color: string } | null;
-	ta?: { name: string; color: string } | null;
+	classId: string | null;
+	roomId: string | null;
+	order: number;
+	teacher?: { id: string; name: string; color: string } | null;
+	ta?: { id: string; name: string; color: string } | null;
+	class?: { id: string; name: string } | null;
+	room?: { id: string; name: string } | null;
 }
 
 interface School {
@@ -13,95 +18,116 @@ interface School {
 }
 
 interface ScheduleCellProps {
-	session: Session | null;
+	entries: Entry[];
 	school: School;
 	isConflict: boolean;
-	onClick: () => void;
 	conflictLabel: string;
+	onAddEntry: () => void;
+	onEditEntry: (entry: Entry) => void;
 }
 
 export function ScheduleCell({
-	session,
+	entries,
 	school,
 	isConflict,
-	onClick,
 	conflictLabel,
+	onAddEntry,
+	onEditEntry,
 }: ScheduleCellProps) {
 	return (
 		<td
-			className="border p-0"
+			className="border p-0 align-top"
 			style={{
 				borderColor: "var(--border)",
-				minWidth: "120px",
-				minHeight: "80px",
+				minWidth: "130px",
 			}}
 		>
-			<button
-				className="relative flex h-full w-full flex-col gap-1 p-2 text-left transition-colors hover:brightness-95"
-				onClick={onClick}
+			<div
+				className="relative flex flex-col gap-1 p-1.5"
 				style={{
-					background: session ? "var(--surface)" : "var(--surface-alt)",
-					minHeight: "80px",
-					borderLeft: session
+					borderLeft: entries.length > 0
 						? `4px solid ${school.color}`
 						: "4px solid transparent",
+					minHeight: "80px",
+					background: entries.length > 0 ? "var(--surface)" : "var(--surface-alt)",
 				}}
-				type="button"
 			>
-				{!session ? (
-					<span
-						className="absolute inset-0 flex items-center justify-center text-2xl"
-						style={{ color: "var(--text-muted)", opacity: 0.3 }}
-					>
-						+
-					</span>
-				) : (
-					<>
-						{session.teacher && (
-							<div className="flex items-center gap-1">
-								<span
-									className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-									style={{ background: session.teacher.color }}
-								/>
-								<span
-									className="truncate font-semibold text-xs"
-									style={{ color: "var(--text)" }}
-								>
-									{session.teacher.name}
-								</span>
-							</div>
-						)}
-						{session.ta && (
-							<div
-								className="truncate text-xs"
-								style={{ color: "var(--text-secondary)" }}
-							>
-								TA: {session.ta.name}
-							</div>
-						)}
-						{session.note && (
-							<span
-								className="rounded-full px-1.5 py-0.5 text-xs italic"
-								style={{
-									background: "var(--primary-light)",
-									color: "var(--primary-dark)",
-								}}
-							>
-								{session.note}
-							</span>
-						)}
-					</>
-				)}
-
 				{isConflict && (
 					<span
-						className="absolute top-1 right-1 animate-pulse rounded px-1 font-bold text-white text-xs"
+						className="absolute top-1 right-1 z-10 animate-pulse rounded px-1 font-bold text-white text-xs"
 						style={{ background: "var(--danger)", fontSize: "10px" }}
 					>
 						{conflictLabel}
 					</span>
 				)}
-			</button>
+
+				{entries.length === 0 ? (
+					<button
+						className="absolute inset-0 flex items-center justify-center text-2xl transition-colors hover:brightness-95"
+						onClick={onAddEntry}
+						style={{ color: "var(--text-muted)", opacity: 0.3 }}
+						type="button"
+					>
+						+
+					</button>
+				) : (
+					<>
+						{entries.map((entry) => (
+							<button
+								className="w-full rounded p-1 text-left text-xs transition-colors hover:brightness-95"
+								key={entry.id}
+								onClick={() => onEditEntry(entry)}
+								style={{
+									background: "var(--surface-alt)",
+									border: "1px solid var(--border)",
+								}}
+								type="button"
+							>
+								{entry.teacher && (
+									<div className="flex items-center gap-1">
+										<span
+											className="h-2 w-2 flex-shrink-0 rounded-full"
+											style={{ background: entry.teacher.color }}
+										/>
+										<span className="truncate font-semibold" style={{ color: "var(--text)" }}>
+											{entry.teacher.name}
+										</span>
+									</div>
+								)}
+								{entry.ta && (
+									<div className="truncate" style={{ color: "var(--text-secondary)" }}>
+										TA: {entry.ta.name}
+									</div>
+								)}
+								{(entry.class ?? entry.room) && (
+									<div className="flex gap-1" style={{ color: "var(--text-muted)" }}>
+										{entry.class && (
+											<span className="rounded px-1" style={{ background: "var(--primary-light)", color: "var(--primary-dark)" }}>
+												{entry.class.name}
+											</span>
+										)}
+										{entry.room && (
+											<span className="truncate">{entry.room.name}</span>
+										)}
+									</div>
+								)}
+							</button>
+						))}
+						<button
+							className="mt-0.5 w-full rounded py-0.5 text-center font-medium text-xs transition-colors hover:brightness-95"
+							onClick={onAddEntry}
+							style={{
+								color: "var(--primary)",
+								border: "1px dashed var(--primary)",
+								opacity: 0.7,
+							}}
+							type="button"
+						>
+							+ Thêm lớp
+						</button>
+					</>
+				)}
+			</div>
 		</td>
 	);
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { ClassesPanel } from "~/components/classes/ClassesPanel";
+import { RoomsPanel } from "~/components/rooms/RoomsPanel";
 import { SchedulePanel } from "~/components/schedule/SchedulePanel";
 import { SchoolsPanel } from "~/components/schools/SchoolsPanel";
 import { TimeSettingsPanel } from "~/components/settings/TimeSettingsPanel";
@@ -20,6 +22,8 @@ export default function Home() {
 				{activeTab === 2 && <StaffPanel mode="ta" />}
 				{activeTab === 3 && <TimeSettingsPanel />}
 				{activeTab === 4 && <SchoolsPanel />}
+				{activeTab === 5 && <ClassesPanel />}
+				{activeTab === 6 && <RoomsPanel />}
 			</main>
 		</ToastProvider>
 	);

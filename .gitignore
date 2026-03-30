@@ -44,3 +44,11 @@ yarn-error.log*
 
 # idea files
 .idea
+
+# Prisma platform-specific binaries
+/generated/prisma/query_engine-*.dll.node
+/generated/prisma/query_engine-*.dll.node.tmp*
+/generated/prisma/libquery_engine-*.so.node
+
+# Claude local settings
+.claude/settings.local.json

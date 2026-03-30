@@ -5,28 +5,36 @@ import { useToast } from "~/components/Toast";
 import { useLang } from "~/contexts/LangContext";
 import { api } from "~/trpc/react";
 import { formatDateRange, getMonday } from "~/utils/time";
-import { EditCellModal } from "./EditCellModal";
+import { EditCellModal, type EditCellModalState } from "./EditCellModal";
 import { ScheduleTable } from "./ScheduleTable";
 
-interface CellInfo {
+interface Entry {
+	id: string;
+	teacherId: string | null;
+	taId: string | null;
+	classId: string | null;
+	roomId: string | null;
+	teacher?: { id: string; name: string; color: string } | null;
+	ta?: { id: string; name: string; color: string } | null;
+	class?: { id: string; name: string } | null;
+	room?: { id: string; name: string } | null;
+	order: number;
+}
+
+interface CellTarget {
 	weekStart: string;
 	dayIndex: number;
 	periodIndex: number;
 	schoolId: string;
 	schoolName: string;
 	dayLabel: string;
-	currentSession?: {
-		teacherId: string | null;
-		taId: string | null;
-		note: string | null;
-	} | null;
 }
 
 export function SchedulePanel() {
 	const { t } = useLang();
 	const { showToast } = useToast();
 	const [weekOffset, setWeekOffset] = useState(0);
-	const [selectedCell, setSelectedCell] = useState<CellInfo | null>(null);
+	const [modalState, setModalState] = useState<EditCellModalState | null>(null);
 	const [isExporting, setIsExporting] = useState(false);
 	const exportRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +59,6 @@ export function SchedulePanel() {
 
 	const dateRange = formatDateRange(weekStart);
 
-	/** Resolve CSS variables thành giá trị thực để html2canvas render đúng */
 	const resolveOnClone = (clonedDoc: Document) => {
 		const computed = getComputedStyle(document.documentElement);
 		const vars = [
@@ -71,7 +78,6 @@ export function SchedulePanel() {
 		for (const v of vars) {
 			root.style.setProperty(v, computed.getPropertyValue(v).trim());
 		}
-		// Xoá overflow:hidden trên tất cả elements để tránh clip chữ
 		const all = clonedDoc.querySelectorAll<HTMLElement>("*");
 		for (const el of all) {
 			const ov = getComputedStyle(el).overflow;
@@ -89,9 +95,7 @@ export function SchedulePanel() {
 			backgroundColor: "#ffffff",
 			logging: false,
 			onclone: (_clonedDoc, el) => {
-				// el là phần tử gốc được clone
 				resolveOnClone(el.ownerDocument);
-				// Đảm bảo container không clip
 				el.style.overflow = "visible";
 				el.style.height = "auto";
 			},
@@ -139,6 +143,14 @@ export function SchedulePanel() {
 		}
 	};
 
+	const handleAddEntry = (cell: CellTarget) => {
+		setModalState({ cell, entry: null });
+	};
+
+	const handleEditEntry = (entry: Entry, cell: CellTarget) => {
+		setModalState({ cell, entry });
+	};
+
 	return (
 		<div className="p-4">
 			{/* Week navigation */}
@@ -152,10 +164,7 @@ export function SchedulePanel() {
 					◀
 				</button>
 				<div className="flex flex-col">
-					<span
-						className="font-semibold text-sm"
-						style={{ color: "var(--text)" }}
-					>
+					<span className="font-semibold text-sm" style={{ color: "var(--text)" }}>
 						{weekLabel}
 					</span>
 					<span className="text-xs" style={{ color: "var(--text-muted)" }}>
@@ -181,7 +190,6 @@ export function SchedulePanel() {
 					</button>
 				)}
 
-				{/* Export buttons — only show when there are schools */}
 				{schools.length > 0 && (
 					<div className="ml-auto flex gap-2">
 						<button
@@ -206,7 +214,6 @@ export function SchedulePanel() {
 				)}
 			</div>
 
-			{/* Empty state */}
 			{schools.length === 0 ? (
 				<div
 					className="flex flex-col items-center gap-3 rounded-xl py-16"
@@ -224,9 +231,7 @@ export function SchedulePanel() {
 					</p>
 				</div>
 			) : (
-				/* Exportable area */
 				<div ref={exportRef} style={{ background: "#ffffff", padding: "12px" }}>
-					{/* Header for export */}
 					<div className="mb-3 flex items-center justify-between">
 						<h2 className="font-bold text-base" style={{ color: "#1e293b" }}>
 							📅 Lịch dạy học — {weekLabel}
@@ -236,7 +241,8 @@ export function SchedulePanel() {
 						</span>
 					</div>
 					<ScheduleTable
-						onCellClick={setSelectedCell}
+						onAddEntry={handleAddEntry}
+						onEditEntry={handleEditEntry}
 						period1Start={period1Start}
 						schools={schools}
 						schoolTimings={schoolTimings.map((st) => ({
@@ -251,9 +257,9 @@ export function SchedulePanel() {
 			)}
 
 			<EditCellModal
-				cell={selectedCell}
-				onClose={() => setSelectedCell(null)}
-				onSaved={() => setSelectedCell(null)}
+				onClose={() => setModalState(null)}
+				onSaved={() => setModalState(null)}
+				state={modalState}
 			/>
 		</div>
 	);
