@@ -1,0 +1,49 @@
+## Prompt thiết kế giao diện:
+
+---
+
+Design a Vietnamese English center weekly teaching schedule web application with the following specifications:
+
+**Overall Layout:**
+A full-width weekly timetable grid. Columns represent weekdays (Thứ 2 to Thứ 6 / Monday–Friday). The leftmost column shows time slots per period. Each school occupies its own sub-column within each day.
+
+**Left Column – Time Slots:**
+- 3 periods (tiết) per afternoon session, each 35 minutes long
+- Period 1: same start time for all schools (editable)
+- Period 2: each school has its own editable start time (e.g. TN: 14:35, TA: 14:40, AT1: 14:45)
+- Period 3: auto-calculated as Period 2 end + 20 min break, but also manually editable
+- Each time slot cell displays the time with the school name as annotation, e.g. "14:35 (TN) / 14:40 (TA)"
+
+**Schedule Cells:**
+Each cell (period × school × day) is an independent block containing:
+- Teacher name (selected from a managed list)
+- Teaching Assistant name (selected from a managed list)
+- Optional free-text note field (e.g. "Mock Test", "Make-up class", "Day off")
+- Cells are clickable to open an edit modal/popover
+
+**Schools:**
+- Multiple schools managed simultaneously
+- Each school is a sub-column within each day
+- Schools can be added, edited, or deleted
+- Multiple schools can run simultaneously in the same period with different staff
+
+**Staff Management Panel (side panel or separate tab):**
+- Separate lists for Teachers (Giáo Viên) and Teaching Assistants (Trợ Giảng)
+- Each person has: name, role, optional color tag
+- Full CRUD: add, edit, delete
+- Conflict warning if the same person is assigned to two schools in the same period on the same day
+
+**UI Style:**
+- Clean, colorful table similar to a school timetable
+- Each cell uses a distinct background color per school or teacher for easy visual scanning
+- Mobile-responsive
+- Top navigation bar with tabs: "Lịch dạy" (Schedule), "Giáo Viên" (Teachers), "Trợ Giảng" (TAs), "Cài đặt giờ" (Time Settings)
+- Modal/drawer for editing individual cells
+- Vietnamese language UI
+
+**Data Persistence:**
+- Data saved to localStorage so the schedule persists across sessions and is accessible from any device via hosted URL
+
+---
+
+Bạn có thể dùng prompt này để thiết kế giao diện mẫu trên Figma, v0.dev, Lovable, hoặc đưa lại cho tôi để tôi code trực tiếp khi bạn sẵn sàng! 😊

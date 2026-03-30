@@ -1,0 +1,78 @@
+{
+	"nav": {
+		"brand": "Teaching Schedule",
+		"schedule": "Schedule",
+		"teachers": "Teachers",
+		"tas": "Teaching Assistants",
+		"settings": "Time Settings",
+		"schools": "Schools",
+		"save": "Save",
+		"reset": "Reset All"
+	},
+	"schedule": {
+		"title": "Weekly Schedule",
+		"currentWeek": "Current Week",
+		"weekPlus": "Week +{n}",
+		"weekMinus": "Week -{n}",
+		"today": "Today",
+		"timeCol": "Time",
+		"period": "Period {n}",
+		"days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+		"emptySchool": "No schools added yet",
+		"emptySchoolSub": "Go to the \"Schools\" tab to add a school",
+		"conflictBadge": "⚠️ CONFLICT"
+	},
+	"cell": {
+		"editTitle": "Period {period} · {school} · {day}",
+		"teacher": "Teacher",
+		"ta": "Teaching Assistant",
+		"note": "Note",
+		"notePlaceholder": "E.g. Mock Test, Day off, Make-up class...",
+		"selectTeacher": "-- Select teacher --",
+		"selectTA": "-- Select TA --",
+		"delete": "Delete",
+		"cancel": "Cancel",
+		"save": "Save"
+	},
+	"teachers": {
+		"title": "Teacher List",
+		"placeholder": "New teacher name...",
+		"add": "+ Add",
+		"edit": "Edit Teacher",
+		"noData": "No teachers yet"
+	},
+	"tas": {
+		"title": "Teaching Assistant List",
+		"placeholder": "New TA name...",
+		"add": "+ Add",
+		"edit": "Edit Teaching Assistant",
+		"noData": "No teaching assistants yet"
+	},
+	"settings": {
+		"title": "Time Settings",
+		"subtitle": "Each period is 35 minutes. Period 3 = Period 2 end + 20 min break (can be manually adjusted).",
+		"period1Label": "Period 1 (all schools)",
+		"period2Label": "Period 2 (per school)",
+		"period3Label": "Period 3 (manual or auto)",
+		"autoCalc": "Auto-calculate"
+	},
+	"schools": {
+		"title": "Manage Schools",
+		"placeholder": "Abbreviation (e.g. TN, TA, AT1)...",
+		"add": "+ Add School",
+		"deleteConfirm": "Delete this school? All its schedule data will be removed."
+	},
+	"toast": {
+		"saved": "✅ Saved",
+		"added": "✅ Added {name}",
+		"deleted": "Cell cleared",
+		"updated": "✅ Updated",
+		"conflict": "⚠️ Schedule conflict!",
+		"p3Recalc": "✅ Period 3 recalculated",
+		"resetAll": "All data cleared"
+	},
+	"staff": {
+		"name": "Name",
+		"color": "Color"
+	}
+}

@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model School {
+  id        String   @id @default(cuid())
+  name      String
+  color     String
+  bg        String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  timings  SchoolTiming[]
+  sessions ScheduleSession[]
+}
+
+model Teacher {
+  id        String   @id @default(cuid())
+  name      String
+  color     String
+  createdAt DateTime @default(now())
+
+  sessions ScheduleSession[]
+}
+
+model TeachingAssistant {
+  id        String   @id @default(cuid())
+  name      String
+  color     String
+  createdAt DateTime @default(now())
+
+  sessions ScheduleSession[]
+}
+
+model GlobalSetting {
+  id           String @id @default("singleton")
+  period1Start String @default("14:00")
+}
+
+model SchoolTiming {
+  id           String @id @default(cuid())
+  schoolId     String @unique
+  school       School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  period2Start String
+  period3Start String
+}
+
+model ScheduleSession {
+  id          String             @id @default(cuid())
+  weekStart   String
+  dayIndex    Int
+  periodIndex Int
+  schoolId    String
+  school      School             @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  teacherId   String?
+  teacher     Teacher?           @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  taId        String?
+  ta          TeachingAssistant? @relation(fields: [taId], references: [id], onDelete: SetNull)
+  note        String?            @db.Text
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@unique([weekStart, dayIndex, periodIndex, schoolId])
+}

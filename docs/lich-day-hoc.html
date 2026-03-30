@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Lịch Dạy Học - Trung Tâm Anh Ngữ</title>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap"
+			rel="stylesheet"
+		>
+		<style>
+		:root {
+			--bg: #f0f4f8;
+			--surface: #ffffff;
+			--surface-alt: #f7f9fc;
+			--text: #1a2332;
+			--text-secondary: #5a6a7e;
+			--text-muted: #8896a8;
+			--border: #e2e8f0;
+			--border-light: #edf2f7;
+			--primary: #3b82f6;
+			--primary-dark: #2563eb;
+			--primary-light: #dbeafe;
+			--accent: #f59e0b;
+			--accent-light: #fef3c7;
+			--danger: #ef4444;
+			--danger-light: #fee2e2;
+			--success: #10b981;
+			--success-light: #d1fae5;
+			--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+			--shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+			--shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+			--shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.15);
+			--radius: 10px;
+			--radius-lg: 16px;
+			--transition: 0.2s ease;
+
+			--school-1: #3b82f6;
+			--school-1-bg: #eff6ff;
+			--school-2: #8b5cf6;
+			--school-2-bg: #f5f3ff;
+			--school-3: #ec4899;
+			--school-3-bg: #fdf2f8;
+			--school-4: #14b8a6;
+			--school-4-bg: #f0fdfa;
+			--school-5: #f97316;
+			--school-5-bg: #fff7ed;
+			--school-6: #06b6d4;
+			--school-6-bg: #ecfeff;
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: "Be Vietnam Pro", sans-serif;
+			background: var(--bg);
+			color: var(--text);
+			min-height: 100vh;
+			overflow-x: hidden;
+		}
+
+		/* ── NAV ── */
+		.top-nav {
+			background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8e 100%);
+			padding: 0 24px;
+			display: flex;
+			align-items: center;
+			height: 60px;
+			position: sticky;
+			top: 0;
+			z-index: 100;
+			box-shadow: 0 2px 20px rgba(30, 58, 95, 0.3);
+		}
+
+		.nav-brand {
+			font-family: "Quicksand", sans-serif;
+			font-weight: 700;
+			font-size: 1.25rem;
+			color: #fff;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			margin-right: 40px;
+			white-space: nowrap;
+		}
+
+		.nav-brand-icon {
+			width: 36px;
+			height: 36px;
+			background: var(--accent);
+			border-radius: 10px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 18px;
+			box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+		}
+
+		.nav-tabs {
+			display: flex;
+			gap: 4px;
+			flex: 1;
+			overflow-x: auto;
+		}
+
+		.nav-tab {
+			padding: 8px 20px;
+			border-radius: 8px;
+			background: transparent;
+			border: none;
+			color: rgba(255, 255, 255, 0.7);
+			font-family: "Be Vietnam Pro", sans-serif;
+			font-size: 0.875rem;
+			font-weight: 500;
+			cursor: pointer;
+			transition: var(--transition);
+			white-space: nowrap;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.nav-tab:hover {
+			background: rgba(255, 255, 255, 0.1);
+			color: #fff;
+		}
+		.nav-tab.active {
+			background: rgba(255, 255, 255, 0.2);
+			color: #fff;
+			font-weight: 600;
+		}
+
+		.nav-actions {
+			display: flex;
+			gap: 8px;
+			margin-left: auto;
+		}
+
+		/* ── PANELS ── */
+		.panel {
+			display: none;
+			padding: 20px 24px;
+			max-width: 1600px;
+			margin: 0 auto;
+		}
+		.panel.active {
+			display: block;
+		}
+
+		/* ── SCHEDULE TABLE ── */
+		.schedule-wrapper {
+			overflow-x: auto;
+			background: var(--surface);
+			border-radius: var(--radius-lg);
+			box-shadow: var(--shadow-md);
+			border: 1px solid var(--border);
+		}
+
+		.schedule-table {
+			width: 100%;
+			border-collapse: collapse;
+			min-width: 800px;
+		}
+
+		.schedule-table th,
+		.schedule-table td {
+			border: 1px solid var(--border-light);
+			padding: 0;
+			text-align: center;
+			vertical-align: top;
+		}
+
+		.schedule-table thead th {
+			background: linear-gradient(135deg, #1e3a5f, #2d5a8e);
+			color: #fff;
+			font-weight: 600;
+			font-size: 0.85rem;
+			padding: 12px 8px;
+			position: sticky;
+			top: 60px;
+			z-index: 10;
+		}
+
+		.schedule-table thead th.day-header {
+			border-bottom: 3px solid var(--accent);
+		}
+
+		.school-sub-header {
+			background: var(--surface-alt) !important;
+			color: var(--text) !important;
+			font-size: 0.75rem !important;
+			font-weight: 600 !important;
+			padding: 6px 4px !important;
+			letter-spacing: 0.5px;
+		}
+
+		.time-cell {
+			background: var(--surface-alt);
+			font-size: 0.72rem;
+			padding: 8px 6px !important;
+			min-width: 90px;
+			font-weight: 500;
+			color: var(--text-secondary);
+			line-height: 1.6;
+			vertical-align: middle;
+			text-align: left;
+		}
+
+		.time-cell .time-line {
+			display: block;
+			white-space: nowrap;
+		}
+
+		.time-cell .time-val {
+			font-weight: 700;
+			color: var(--text);
+			font-size: 0.8rem;
+		}
+		.time-cell .time-school {
+			color: var(--text-muted);
+			font-size: 0.65rem;
+		}
+
+		/* ── SCHEDULE CELL ── */
+		.sched-cell {
+			min-width: 120px;
+			min-height: 80px;
+			padding: 6px !important;
+			cursor: pointer;
+			transition: var(--transition);
+			position: relative;
+		}
+
+		.sched-cell:hover {
+			background: var(--primary-light) !important;
+			transform: scale(1.02);
+			z-index: 5;
+			box-shadow: var(--shadow-md);
+		}
+
+		.cell-content {
+			border-radius: 8px;
+			padding: 8px;
+			min-height: 68px;
+			display: flex;
+			flex-direction: column;
+			gap: 3px;
+			font-size: 0.75rem;
+			text-align: left;
+			border-left: 3px solid transparent;
+		}
+
+		.cell-content.filled {
+			border-left-color: var(--school-1);
+		}
+
+		.cell-teacher {
+			font-weight: 700;
+			font-size: 0.8rem;
+			color: var(--text);
+			display: flex;
+			align-items: center;
+			gap: 4px;
+		}
+
+		.cell-teacher .dot {
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			flex-shrink: 0;
+		}
+
+		.cell-ta {
+			font-size: 0.7rem;
+			color: var(--text-secondary);
+			font-weight: 500;
+		}
+
+		.cell-note {
+			font-size: 0.65rem;
+			color: var(--primary);
+			font-style: italic;
+			margin-top: 2px;
+			background: var(--primary-light);
+			padding: 2px 6px;
+			border-radius: 4px;
+			display: inline-block;
+		}
+
+		.cell-empty {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--text-muted);
+			font-size: 1.2rem;
+			opacity: 0.3;
+		}
+
+		.conflict-badge {
+			position: absolute;
+			top: 4px;
+			right: 4px;
+			background: var(--danger);
+			color: #fff;
+			font-size: 0.55rem;
+			padding: 2px 5px;
+			border-radius: 4px;
+			font-weight: 700;
+			animation: pulse 1.5s infinite;
+		}
+
+		@keyframes pulse {
+			0%,
+			100% {
+				opacity: 1;
+			}
+			50% {
+				opacity: 0.6;
+			}
+		}
+
+		/* ── MODAL ── */
+		.modal-overlay {
+			display: none;
+			position: fixed;
+			inset: 0;
+			background: rgba(0, 0, 0, 0.5);
+			backdrop-filter: blur(4px);
+			z-index: 200;
+			align-items: center;
+			justify-content: center;
+			padding: 20px;
+		}
+
+		.modal-overlay.open {
+			display: flex;
+		}
+
+		.modal {
+			background: var(--surface);
+			border-radius: var(--radius-lg);
+			box-shadow: var(--shadow-xl);
+			width: 100%;
+			max-width: 460px;
+			max-height: 90vh;
+			overflow-y: auto;
+			animation: modalIn 0.25s ease;
+		}
+
+		@keyframes modalIn {
+			from {
+				transform: translateY(20px) scale(0.97);
+				opacity: 0;
+			}
+			to {
+				transform: translateY(0) scale(1);
+				opacity: 1;
+			}
+		}
+
+		.modal-header {
+			padding: 20px 24px 16px;
+			border-bottom: 1px solid var(--border-light);
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.modal-header h3 {
+			font-family: "Quicksand", sans-serif;
+			font-size: 1.1rem;
+			font-weight: 700;
+		}
+
+		.modal-close {
+			width: 32px;
+			height: 32px;
+			border-radius: 8px;
+			border: none;
+			background: var(--surface-alt);
+			cursor: pointer;
+			font-size: 1.1rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: var(--transition);
+		}
+
+		.modal-close:hover {
+			background: var(--danger-light);
+			color: var(--danger);
+		}
+
+		.modal-body {
+			padding: 20px 24px;
+		}
+
+		.form-group {
+			margin-bottom: 16px;
+		}
+
+		.form-group label {
+			display: block;
+			font-size: 0.8rem;
+			font-weight: 600;
+			color: var(--text-secondary);
+			margin-bottom: 6px;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+
+		.form-group select,
+		.form-group input,
+		.form-group textarea {
+			width: 100%;
+			padding: 10px 14px;
+			border: 1.5px solid var(--border);
+			border-radius: var(--radius);
+			font-family: "Be Vietnam Pro", sans-serif;
+			font-size: 0.9rem;
+			background: var(--surface);
+			color: var(--text);
+			transition: var(--transition);
+		}
+
+		.form-group select:focus,
+		.form-group input:focus,
+		.form-group textarea:focus {
+			outline: none;
+			border-color: var(--primary);
+			box-shadow: 0 0 0 3px var(--primary-light);
+		}
+
+		.form-group textarea {
+			resize: vertical;
+			min-height: 60px;
+		}
+
+		.modal-footer {
+			padding: 16px 24px 20px;
+			display: flex;
+			gap: 10px;
+			justify-content: flex-end;
+			border-top: 1px solid var(--border-light);
+		}
+
+		/* ── BUTTONS ── */
+		.btn {
+			padding: 9px 20px;
+			border-radius: var(--radius);
+			border: none;
+			font-family: "Be Vietnam Pro", sans-serif;
+			font-size: 0.85rem;
+			font-weight: 600;
+			cursor: pointer;
+			transition: var(--transition);
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.btn-primary {
+			background: var(--primary);
+			color: #fff;
+		}
+		.btn-primary:hover {
+			background: var(--primary-dark);
+			box-shadow: var(--shadow-md);
+		}
+		.btn-secondary {
+			background: var(--surface-alt);
+			color: var(--text);
+			border: 1px solid var(--border);
+		}
+		.btn-secondary:hover {
+			background: var(--border-light);
+		}
+		.btn-danger {
+			background: var(--danger);
+			color: #fff;
+		}
+		.btn-danger:hover {
+			background: #dc2626;
+		}
+		.btn-success {
+			background: var(--success);
+			color: #fff;
+		}
+		.btn-success:hover {
+			background: #059669;
+		}
+		.btn-sm {
+			padding: 6px 14px;
+			font-size: 0.78rem;
+		}
+		.btn-icon {
+			width: 34px;
+			height: 34px;
+			padding: 0;
+			justify-content: center;
+			border-radius: 8px;
+		}
+
+		/* ── STAFF PANEL ── */
+		.staff-panel {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 16px;
+		}
+
+		.staff-card {
+			background: var(--surface);
+			border-radius: var(--radius-lg);
+			box-shadow: var(--shadow-sm);
+			border: 1px solid var(--border);
+			overflow: hidden;
+		}
+
+		.staff-card-header {
+			padding: 16px 20px;
+			background: var(--surface-alt);
+			border-bottom: 1px solid var(--border-light);
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.staff-card-header h3 {
+			font-family: "Quicksand", sans-serif;
+			font-size: 1rem;
+			font-weight: 700;
+		}
+
+		.staff-list {
+			padding: 12px;
+		}
+
+		.staff-item {
+			display: flex;
+			align-items: center;
+			padding: 10px 12px;
+			border-radius: var(--radius);
+			gap: 10px;
+			transition: var(--transition);
+		}
+
+		.staff-item:hover {
+			background: var(--surface-alt);
+		}
+
+		.staff-color {
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			flex-shrink: 0;
+			border: 2px solid rgba(0, 0, 0, 0.1);
+		}
+
+		.staff-name {
+			flex: 1;
+			font-weight: 500;
+			font-size: 0.9rem;
+		}
+
+		.staff-actions {
+			display: flex;
+			gap: 4px;
+		}
+
+		.staff-add-row {
+			padding: 12px;
+			display: flex;
+			gap: 8px;
+			border-top: 1px solid var(--border-light);
+		}
+
+		.staff-add-row input {
+			flex: 1;
+			padding: 8px 12px;
+			border: 1.5px solid var(--border);
+			border-radius: var(--radius);
+			font-family: "Be Vietnam Pro", sans-serif;
+			font-size: 0.85rem;
+		}
+
+		.staff-add-row input:focus {
+			outline: none;
+			border-color: var(--primary);
+		}
+
+		/* ── TIME SETTINGS ── */
+		.time-settings {
+			background: var(--surface);
+			border-radius: var(--radius-lg);
+			box-shadow: var(--shadow-sm);
+			border: 1px solid var(--border);
+			padding: 24px;
+		}
+
+		.time-settings h3 {
+			font-family: "Quicksand", sans-serif;
+			font-weight: 700;
+			margin-bottom: 20px;
+		}
+
+		.time-grid {
+			display: grid;
+			gap: 16px;
+		}
+
+		.time-row {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			flex-wrap: wrap;
+			padding: 12px 16px;
+			background: var(--surface-alt);
+			border-radius: var(--radius);
+			border: 1px solid var(--border-light);
+		}
+
+		.time-row label {
+			font-weight: 600;
+			font-size: 0.85rem;
+			min-width: 100px;
+			color: var(--text-secondary);
+		}
+
+		.time-row input[type="time"] {
+			padding: 6px 10px;
+			border: 1.5px solid var(--border);
+			border-radius: var(--radius);
+			font-family: "Be Vietnam Pro", sans-serif;
+			font-size: 0.85rem;
+		}
+
+		.time-row input[type="time"]:focus {
+			outline: none;
+			border-color: var(--primary);
+		}
+
+		.time-school-label {
+			font-size: 0.72rem;
+			font-weight: 600;
+			color: var(--text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+
+		/* ── SCHOOLS MANAGEMENT ── */
+		.schools-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+			gap: 12px;
+			margin-bottom: 16px;
+		}
+
+		.school-tag {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 14px 16px;
+			background: var(--surface);
+			border-radius: var(--radius);
+			border: 1px solid var(--border);
+			box-shadow: var(--shadow-sm);
+		}
+
+		.school-tag-color {
+			width: 16px;
+			height: 16px;
+			border-radius: 6px;
+			flex-shrink: 0;
+		}
+
+		.school-tag-name {
+			flex: 1;
+			font-weight: 600;
+			font-size: 0.9rem;
+		}
+
+		/* ── WEEK NAV ── */
+		.week-nav {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			margin-bottom: 16px;
+			flex-wrap: wrap;
+		}
+
+		.week-label {
+			font-family: "Quicksand", sans-serif;
+			font-weight: 700;
+			font-size: 1.1rem;
+			color: var(--text);
+		}
+
+		.week-date {
+			font-size: 0.85rem;
+			color: var(--text-secondary);
+			background: var(--surface);
+			padding: 6px 14px;
+			border-radius: 20px;
+			border: 1px solid var(--border);
+		}
+
+		/* ── TOAST ── */
+		.toast-container {
+			position: fixed;
+			bottom: 24px;
+			right: 24px;
+			z-index: 300;
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.toast {
+			padding: 12px 20px;
+			border-radius: var(--radius);
+			font-size: 0.85rem;
+			font-weight: 500;
+			box-shadow: var(--shadow-lg);
+			animation: toastIn 0.3s ease;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.toast-warning {
+			background: var(--accent);
+			color: #000;
+		}
+		.toast-success {
+			background: var(--success);
+			color: #fff;
+		}
+		.toast-error {
+			background: var(--danger);
+			color: #fff;
+		}
+
+		@keyframes toastIn {
+			from {
+				transform: translateX(40px);
+				opacity: 0;
+			}
+			to {
+				transform: translateX(0);
+				opacity: 1;
+			}
+		}
+
+		/* ── RESPONSIVE ── */
+		@media (max-width: 768px) {
+			.top-nav {
+				padding: 0 12px;
+				height: 54px;
+			}
+			.nav-brand {
+				margin-right: 12px;
+				font-size: 1rem;
+			}
+			.nav-brand span {
+				display: none;
+			}
+			.nav-tab {
+				padding: 6px 12px;
+				font-size: 0.78rem;
+			}
+			.panel {
+				padding: 12px;
+			}
+			.sched-cell {
+				min-width: 100px;
+			}
+			.time-cell {
+				min-width: 70px;
+				font-size: 0.65rem;
+			}
+		}
+
+		/* ── COLOR PICKER ── */
+		.color-options {
+			display: flex;
+			gap: 6px;
+			flex-wrap: wrap;
+			margin-top: 6px;
+		}
+
+		.color-opt {
+			width: 28px;
+			height: 28px;
+			border-radius: 50%;
+			border: 3px solid transparent;
+			cursor: pointer;
+			transition: var(--transition);
+		}
+
+		.color-opt:hover {
+			transform: scale(1.15);
+		}
+		.color-opt.selected {
+			border-color: var(--text);
+			box-shadow: var(--shadow-sm);
+		}
+
+		/* ── EMPTY STATE ── */
+		.empty-state {
+			text-align: center;
+			padding: 60px 20px;
+			color: var(--text-muted);
+		}
+
+		.empty-state-icon {
+			font-size: 3rem;
+			margin-bottom: 12px;
+		}
+		.empty-state-text {
+			font-size: 1rem;
+			font-weight: 500;
+		}
+		.empty-state-sub {
+			font-size: 0.85rem;
+			margin-top: 6px;
+		}
+
+		/* ── EXPORT BTN ── */
+		.btn-export {
+			background: rgba(255, 255, 255, 0.15);
+			color: #fff;
+			border: 1px solid rgba(255, 255, 255, 0.25);
+			padding: 6px 14px;
+			border-radius: 8px;
+			font-family: "Be Vietnam Pro", sans-serif;
+			font-size: 0.8rem;
+			font-weight: 500;
+			cursor: pointer;
+			transition: var(--transition);
+		}
+		.btn-export:hover {
+			background: rgba(255, 255, 255, 0.25);
+		}
+		</style>
+	</head>
+	<body>
+		<!-- NAV -->
+		<nav class="top-nav">
+			<div class="nav-brand">
+				<div class="nav-brand-icon">📚</div>
+				<span>Lịch Dạy Học</span>
+			</div>
+			<div class="nav-tabs">
+				<button class="nav-tab active" data-tab="schedule">📅 Lịch dạy</button>
+				<button class="nav-tab" data-tab="teachers">👩‍🏫 Giáo Viên</button>
+				<button class="nav-tab" data-tab="tas">🧑‍💼 Trợ Giảng</button>
+				<button class="nav-tab" data-tab="settings">⚙️ Cài đặt giờ</button>
+				<button class="nav-tab" data-tab="schools">🏫 Trường</button>
+			</div>
+			<div class="nav-actions">
+				<button class="btn-export" onclick="exportData()" title="Xuất dữ liệu">
+					💾 Lưu
+				</button>
+				<button class="btn-export" onclick="resetAll()" title="Xoá toàn bộ">
+					🗑️
+				</button>
+			</div>
+		</nav>
+
+		<!-- SCHEDULE PANEL -->
+		<div class="panel active" id="panel-schedule">
+			<div class="week-nav">
+				<button class="btn btn-secondary btn-sm" onclick="changeWeek(-1)">
+					◀
+				</button>
+				<span class="week-label" id="weekLabel">Tuần hiện tại</span>
+				<button class="btn btn-secondary btn-sm" onclick="changeWeek(1)">
+					▶
+				</button>
+				<span class="week-date" id="weekDate"></span>
+				<button
+					class="btn btn-sm btn-secondary"
+					onclick="goToday()"
+					style="margin-left:auto"
+				>
+					Hôm nay
+				</button>
+			</div>
+			<div class="schedule-wrapper">
+				<div id="scheduleContainer"></div>
+			</div>
+		</div>
+
+		<!-- TEACHERS PANEL -->
+		<div class="panel" id="panel-teachers">
+			<div class="staff-card">
+				<div class="staff-card-header">
+					<h3>👩‍🏫 Danh sách Giáo Viên</h3>
+				</div>
+				<div class="staff-list" id="teacherList"></div>
+				<div class="staff-add-row">
+					<input
+						type="text"
+						id="newTeacherName"
+						placeholder="Tên giáo viên mới..."
+					>
+					<button class="btn btn-primary btn-sm" onclick="addStaff('teacher')">
+						+ Thêm
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- TAS PANEL -->
+		<div class="panel" id="panel-tas">
+			<div class="staff-card">
+				<div class="staff-card-header">
+					<h3>🧑‍💼 Danh sách Trợ Giảng</h3>
+				</div>
+				<div class="staff-list" id="taList"></div>
+				<div class="staff-add-row">
+					<input type="text" id="newTAName" placeholder="Tên trợ giảng mới...">
+					<button class="btn btn-primary btn-sm" onclick="addStaff('ta')">
+						+ Thêm
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- TIME SETTINGS PANEL -->
+		<div class="panel" id="panel-settings">
+			<div class="time-settings">
+				<h3>⏰ Cài đặt giờ học</h3>
+				<p
+					style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:20px"
+				>
+					Mỗi tiết 35 phút. Tiết 3 = Tiết 2 kết thúc + 20 phút nghỉ (có thể
+					chỉnh tay).
+				</p>
+				<div class="time-grid" id="timeSettingsGrid"></div>
+			</div>
+		</div>
+
+		<!-- SCHOOLS PANEL -->
+		<div class="panel" id="panel-schools">
+			<div class="staff-card">
+				<div class="staff-card-header">
+					<h3>🏫 Quản lý Trường</h3>
+				</div>
+				<div style="padding:16px">
+					<div class="schools-grid" id="schoolsGrid"></div>
+				</div>
+				<div class="staff-add-row">
+					<input
+						type="text"
+						id="newSchoolName"
+						placeholder="Tên viết tắt (VD: TN, TA, AT1)..."
+					>
+					<button class="btn btn-primary btn-sm" onclick="addSchool()">
+						+ Thêm trường
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- EDIT CELL MODAL -->
+		<div class="modal-overlay" id="cellModal">
+			<div class="modal">
+				<div class="modal-header">
+					<h3 id="cellModalTitle">Chỉnh sửa</h3>
+					<button class="modal-close" onclick="closeCellModal()">✕</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Giáo viên</label>
+						<select id="cellTeacher">
+							<option value="">-- Chọn giáo viên --</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Trợ giảng</label>
+						<select id="cellTA">
+							<option value="">-- Chọn trợ giảng --</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Ghi chú</label>
+						<textarea
+							id="cellNote"
+							placeholder="VD: Mock Test, Nghỉ, Dạy bù..."
+						></textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-danger btn-sm" onclick="clearCell()">
+						Xoá
+					</button>
+					<button class="btn btn-secondary btn-sm" onclick="closeCellModal()">
+						Huỷ
+					</button>
+					<button class="btn btn-primary btn-sm" onclick="saveCell()">
+						Lưu
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- EDIT STAFF MODAL -->
+		<div class="modal-overlay" id="staffModal">
+			<div class="modal">
+				<div class="modal-header">
+					<h3 id="staffModalTitle">Chỉnh sửa</h3>
+					<button class="modal-close" onclick="closeStaffModal()">✕</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Tên</label>
+						<input type="text" id="staffEditName">
+					</div>
+					<div class="form-group">
+						<label>Màu</label>
+						<div class="color-options" id="staffColorOptions"></div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-secondary btn-sm" onclick="closeStaffModal()">
+						Huỷ
+					</button>
+					<button class="btn btn-primary btn-sm" onclick="saveStaffEdit()">
+						Lưu
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="toast-container" id="toastContainer"></div>
+
+		<script>
+		// ── DATA DEFAULTS ──
+		const SCHOOL_COLORS = [
+			"#3b82f6",
+			"#8b5cf6",
+			"#ec4899",
+			"#14b8a6",
+			"#f97316",
+			"#06b6d4",
+			"#e11d48",
+			"#84cc16",
+		];
+		const SCHOOL_BGS = [
+			"#eff6ff",
+			"#f5f3ff",
+			"#fdf2f8",
+			"#f0fdfa",
+			"#fff7ed",
+			"#ecfeff",
+			"#fff1f2",
+			"#f7fee7",
+		];
+		const STAFF_COLORS = [
+			"#3b82f6",
+			"#8b5cf6",
+			"#ec4899",
+			"#14b8a6",
+			"#f97316",
+			"#06b6d4",
+			"#e11d48",
+			"#84cc16",
+			"#6366f1",
+			"#0891b2",
+			"#d946ef",
+			"#65a30d",
+		];
+		const DAYS = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"];
+		const PERIOD_DURATION = 35;
+		const BREAK_DURATION = 20;
+
+		function defaultData() {
+			return {
+				schools: [
+					{ id: "s1", name: "TN", color: SCHOOL_COLORS[0], bg: SCHOOL_BGS[0] },
+					{ id: "s2", name: "TA", color: SCHOOL_COLORS[1], bg: SCHOOL_BGS[1] },
+					{ id: "s3", name: "AT1", color: SCHOOL_COLORS[2], bg: SCHOOL_BGS[2] },
+				],
+				teachers: [
+					{ id: "t1", name: "Cô Mai", color: "#3b82f6" },
+					{ id: "t2", name: "Thầy Hùng", color: "#8b5cf6" },
+					{ id: "t3", name: "Cô Lan", color: "#ec4899" },
+				],
+				tas: [
+					{ id: "a1", name: "Minh", color: "#14b8a6" },
+					{ id: "a2", name: "Hoa", color: "#f97316" },
+				],
+				timeSettings: {},
+				schedule: {},
+				currentWeekOffset: 0,
+			};
+		}
+
+		// ── STATE ──
+		let data;
+		let editingCell = null;
+		let editingStaff = null;
+
+		function loadData() {
+			try {
+				const saved = localStorage.getItem("vn_english_schedule");
+				if (saved) {
+					data = JSON.parse(saved);
+					if (!data.schools) data = defaultData();
+				} else {
+					data = defaultData();
+				}
+			} catch {
+				data = defaultData();
+			}
+			initTimeSettings();
+		}
+
+		function saveData() {
+			localStorage.setItem("vn_english_schedule", JSON.stringify(data));
+		}
+
+		function initTimeSettings() {
+			if (!data.timeSettings.period1Start)
+				data.timeSettings.period1Start = "14:00";
+			data.schools.forEach((s) => {
+				if (!data.timeSettings[`p2_${s.id}`]) {
+					const idx = data.schools.indexOf(s);
+					const base = 14 * 60 + PERIOD_DURATION;
+					data.timeSettings[`p2_${s.id}`] = minsToTime(base + idx * 5);
+				}
+				if (!data.timeSettings[`p3_${s.id}`]) {
+					const p2Mins = timeToMins(data.timeSettings[`p2_${s.id}`]);
+					data.timeSettings[`p3_${s.id}`] = minsToTime(
+						p2Mins + PERIOD_DURATION + BREAK_DURATION,
+					);
+				}
+			});
+		}
+
+		function timeToMins(t) {
+			const [h, m] = t.split(":").map(Number);
+			return h * 60 + m;
+		}
+
+		function minsToTime(m) {
+			const h = Math.floor(m / 60);
+			const mm = m % 60;
+			return `${String(h).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+		}
+
+		function getEndTime(startTime) {
+			return minsToTime(timeToMins(startTime) + PERIOD_DURATION);
+		}
+
+		// ── WEEK CALC ──
+		function getWeekDates(offset) {
+			const now = new Date();
+			const day = now.getDay();
+			const mon = new Date(now);
+			mon.setDate(now.getDate() - (day === 0 ? 6 : day - 1) + offset * 7);
+			const dates = [];
+			for (let i = 0; i < 5; i++) {
+				const d = new Date(mon);
+				d.setDate(mon.getDate() + i);
+				dates.push(d);
+			}
+			return dates;
+		}
+
+		function weekKey(offset) {
+			const dates = getWeekDates(offset);
+			return `${dates[0].toISOString().slice(0, 10)}`;
+		}
+
+		function changeWeek(dir) {
+			data.currentWeekOffset += dir;
+			saveData();
+			renderSchedule();
+		}
+
+		function goToday() {
+			data.currentWeekOffset = 0;
+			saveData();
+			renderSchedule();
+		}
+
+		// ── SCHEDULE KEY ──
+		function cellKey(weekK, dayIdx, periodIdx, schoolId) {
+			return `${weekK}_d${dayIdx}_p${periodIdx}_${schoolId}`;
+		}
+
+		// ── RENDER SCHEDULE ──
+		function renderSchedule() {
+			const wk = weekKey(data.currentWeekOffset);
+			const dates = getWeekDates(data.currentWeekOffset);
+			const schools = data.schools;
+
+			document.getElementById("weekLabel").textContent =
+				data.currentWeekOffset === 0
+					? "Tuần hiện tại"
+					: data.currentWeekOffset > 0
+						? `Tuần +${data.currentWeekOffset}`
+						: `Tuần ${data.currentWeekOffset}`;
+
+			const fmtDate = (d) => `${d.getDate()}/${d.getMonth() + 1}`;
+			document.getElementById("weekDate").textContent =
+				`${fmtDate(dates[0])} – ${fmtDate(dates[4])}/${dates[4].getFullYear()}`;
+
+			if (schools.length === 0) {
+				document.getElementById("scheduleContainer").innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">🏫</div>
+        <div class="empty-state-text">Chưa có trường nào</div>
+        <div class="empty-state-sub">Vào tab "Trường" để thêm trường mới</div>
+      </div>`;
+				return;
+			}
+
+			const totalCols = 1 + schools.length * 5;
+			let html = `<table class="schedule-table"><thead>`;
+
+			// Day headers
+			html += `<tr><th rowspan="2" style="min-width:90px">Giờ học</th>`;
+			DAYS.forEach((day, di) => {
+				html += `<th class="day-header" colspan="${schools.length}">${day}<br><span style="font-weight:400;font-size:0.72rem;opacity:0.8">${fmtDate(dates[di])}</span></th>`;
+			});
+			html += `</tr>`;
+
+			// School sub-headers
+			html += `<tr>`;
+			DAYS.forEach(() => {
+				schools.forEach((s) => {
+					html += `<th class="school-sub-header" style="border-bottom:3px solid ${s.color}">${s.name}</th>`;
+				});
+			});
+			html += `</tr></thead><tbody>`;
+
+			// Periods
+			for (let p = 0; p < 3; p++) {
+				html += `<tr>`;
+				// Time cell
+				html += `<td class="time-cell">`;
+				html += `<strong style="font-size:0.8rem;color:var(--primary)">Tiết ${p + 1}</strong><br>`;
+				if (p === 0) {
+					const start = data.timeSettings.period1Start;
+					const end = getEndTime(start);
+					html += `<span class="time-val">${start}</span> – <span class="time-val">${end}</span>`;
+				} else {
+					schools.forEach((s) => {
+						const key = p === 1 ? `p2_${s.id}` : `p3_${s.id}`;
+						const start = data.timeSettings[key] || "00:00";
+						const end = getEndTime(start);
+						html += `<span class="time-line"><span class="time-val">${start}</span>–<span class="time-val">${end}</span> <span class="time-school">(${s.name})</span></span>`;
+					});
+				}
+				html += `</td>`;
+
+				// Cells
+				DAYS.forEach((_, di) => {
+					schools.forEach((s, si) => {
+						const key = cellKey(wk, di, p, s.id);
+						const cell = data.schedule[key];
+						const conflict = checkConflict(wk, di, p, cell);
+
+						html += `<td class="sched-cell" onclick="openCellModal(${di},${p},'${s.id}')" style="background:${s.bg}22">`;
+						if (conflict) html += `<span class="conflict-badge">⚠ Trùng</span>`;
+
+						if (cell && (cell.teacher || cell.ta || cell.note)) {
+							const teacher = data.teachers.find((t) => t.id === cell.teacher);
+							const ta = data.tas.find((t) => t.id === cell.ta);
+							html += `<div class="cell-content filled" style="border-left-color:${s.color}; background:${s.bg}">`;
+							if (teacher) {
+								html += `<div class="cell-teacher"><span class="dot" style="background:${teacher.color}"></span>${teacher.name}</div>`;
+							}
+							if (ta) {
+								html += `<div class="cell-ta">TA: ${ta.name}</div>`;
+							}
+							if (cell.note) {
+								html += `<div class="cell-note">${cell.note}</div>`;
+							}
+							html += `</div>`;
+						} else {
+							html += `<div class="cell-content cell-empty">+</div>`;
+						}
+						html += `</td>`;
+					});
+				});
+				html += `</tr>`;
+			}
+
+			html += `</tbody></table>`;
+			document.getElementById("scheduleContainer").innerHTML = html;
+		}
+
+		// ── CONFLICT CHECK ──
+		function checkConflict(wk, dayIdx, periodIdx, cell) {
+			if (!cell || (!cell.teacher && !cell.ta)) return false;
+			let found = false;
+			data.schools.forEach((s) => {
+				const key = cellKey(wk, dayIdx, periodIdx, s.id);
+				const other = data.schedule[key];
+				if (!other || other === cell) return;
+				if (cell.teacher && cell.teacher === other.teacher) found = true;
+				if (cell.ta && cell.ta === other.ta) found = true;
+			});
+			return found;
+		}
+
+		// ── CELL MODAL ──
+		function openCellModal(dayIdx, periodIdx, schoolId) {
+			const wk = weekKey(data.currentWeekOffset);
+			const key = cellKey(wk, dayIdx, periodIdx, schoolId);
+			const cell = data.schedule[key] || {};
+			const school = data.schools.find((s) => s.id === schoolId);
+
+			editingCell = { key, dayIdx, periodIdx, schoolId };
+
+			document.getElementById("cellModalTitle").textContent =
+				`${DAYS[dayIdx]} – Tiết ${periodIdx + 1} – ${school ? school.name : ""}`;
+
+			// Populate selects
+			const teacherSel = document.getElementById("cellTeacher");
+			teacherSel.innerHTML = '<option value="">-- Không --</option>';
+			data.teachers.forEach((t) => {
+				teacherSel.innerHTML += `<option value="${t.id}" ${cell.teacher === t.id ? "selected" : ""}>${t.name}</option>`;
+			});
+
+			const taSel = document.getElementById("cellTA");
+			taSel.innerHTML = '<option value="">-- Không --</option>';
+			data.tas.forEach((t) => {
+				taSel.innerHTML += `<option value="${t.id}" ${cell.ta === t.id ? "selected" : ""}>${t.name}</option>`;
+			});
+
+			document.getElementById("cellNote").value = cell.note || "";
+
+			document.getElementById("cellModal").classList.add("open");
+		}
+
+		function closeCellModal() {
+			document.getElementById("cellModal").classList.remove("open");
+			editingCell = null;
+		}
+
+		function saveCell() {
+			if (!editingCell) return;
+			const teacher = document.getElementById("cellTeacher").value;
+			const ta = document.getElementById("cellTA").value;
+			const note = document.getElementById("cellNote").value.trim();
+
+			data.schedule[editingCell.key] = {
+				teacher: teacher || "",
+				ta: ta || "",
+				note,
+			};
+
+			// Check conflicts
+			const wk = weekKey(data.currentWeekOffset);
+			const cell = data.schedule[editingCell.key];
+			if (checkConflict(wk, editingCell.dayIdx, editingCell.periodIdx, cell)) {
+				showToast(
+					"⚠️ Cảnh báo: Người này đã được xếp ở trường khác cùng tiết!",
+					"warning",
+				);
+			}
+
+			saveData();
+			renderSchedule();
+			closeCellModal();
+			showToast("✅ Đã lưu", "success");
+		}
+
+		function clearCell() {
+			if (!editingCell) return;
+			delete data.schedule[editingCell.key];
+			saveData();
+			renderSchedule();
+			closeCellModal();
+			showToast("Đã xoá ô", "success");
+		}
+
+		// ── STAFF MANAGEMENT ──
+		function renderStaff(type) {
+			const list = type === "teacher" ? data.teachers : data.tas;
+			const container =
+				type === "teacher"
+					? document.getElementById("teacherList")
+					: document.getElementById("taList");
+
+			if (list.length === 0) {
+				container.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:0.85rem">Chưa có ${type === "teacher" ? "giáo viên" : "trợ giảng"} nào</div>`;
+				return;
+			}
+
+			container.innerHTML = list
+				.map(
+					(s) => `
+    <div class="staff-item">
+      <span class="staff-color" style="background:${s.color}"></span>
+      <span class="staff-name">${s.name}</span>
+      <div class="staff-actions">
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="editStaff('${type}','${s.id}')" title="Sửa">✏️</button>
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="deleteStaff('${type}','${s.id}')" title="Xoá">🗑️</button>
+      </div>
+    </div>
+  `,
+				)
+				.join("");
+		}
+
+		function addStaff(type) {
+			const input =
+				type === "teacher"
+					? document.getElementById("newTeacherName")
+					: document.getElementById("newTAName");
+			const name = input.value.trim();
+			if (!name) return;
+
+			const list = type === "teacher" ? data.teachers : data.tas;
+			const id = type.charAt(0) + Date.now();
+			const color = STAFF_COLORS[list.length % STAFF_COLORS.length];
+			list.push({ id, name, color });
+
+			input.value = "";
+			saveData();
+			renderStaff(type);
+			showToast(`✅ Đã thêm ${name}`, "success");
+		}
+
+		function deleteStaff(type, id) {
+			if (!confirm("Xoá người này?")) return;
+			const list = type === "teacher" ? data.teachers : data.tas;
+			const idx = list.findIndex((s) => s.id === id);
+			if (idx >= 0) list.splice(idx, 1);
+			saveData();
+			renderStaff(type);
+			renderSchedule();
+		}
+
+		function editStaff(type, id) {
+			const list = type === "teacher" ? data.teachers : data.tas;
+			const person = list.find((s) => s.id === id);
+			if (!person) return;
+
+			editingStaff = { type, id };
+			document.getElementById("staffModalTitle").textContent =
+				`Sửa ${type === "teacher" ? "Giáo Viên" : "Trợ Giảng"}`;
+			document.getElementById("staffEditName").value = person.name;
+
+			const colorContainer = document.getElementById("staffColorOptions");
+			colorContainer.innerHTML = STAFF_COLORS.map(
+				(c) =>
+					`<div class="color-opt ${person.color === c ? "selected" : ""}" style="background:${c}" onclick="selectStaffColor(this,'${c}')"></div>`,
+			).join("");
+
+			document.getElementById("staffModal").classList.add("open");
+		}
+
+		function selectStaffColor(el, color) {
+			document
+				.querySelectorAll("#staffColorOptions .color-opt")
+				.forEach((e) => e.classList.remove("selected"));
+			el.classList.add("selected");
+		}
+
+		function closeStaffModal() {
+			document.getElementById("staffModal").classList.remove("open");
+			editingStaff = null;
+		}
+
+		function saveStaffEdit() {
+			if (!editingStaff) return;
+			const list = editingStaff.type === "teacher" ? data.teachers : data.tas;
+			const person = list.find((s) => s.id === editingStaff.id);
+			if (!person) return;
+
+			person.name =
+				document.getElementById("staffEditName").value.trim() || person.name;
+			const selected = document.querySelector(
+				"#staffColorOptions .color-opt.selected",
+			);
+			if (selected) person.color = selected.style.background;
+
+			saveData();
+			renderStaff(editingStaff.type);
+			renderSchedule();
+			closeStaffModal();
+			showToast("✅ Đã cập nhật", "success");
+		}
+
+		// ── SCHOOLS MANAGEMENT ──
+		function renderSchools() {
+			const grid = document.getElementById("schoolsGrid");
+			if (data.schools.length === 0) {
+				grid.innerHTML = `<div style="padding:20px;color:var(--text-muted);font-size:0.85rem">Chưa có trường nào</div>`;
+				return;
+			}
+			grid.innerHTML = data.schools
+				.map(
+					(s) => `
+    <div class="school-tag">
+      <div class="school-tag-color" style="background:${s.color}"></div>
+      <span class="school-tag-name">${s.name}</span>
+      <button class="btn btn-secondary btn-icon btn-sm" onclick="deleteSchool('${s.id}')" title="Xoá">🗑️</button>
+    </div>
+  `,
+				)
+				.join("");
+		}
+
+		function addSchool() {
+			const input = document.getElementById("newSchoolName");
+			const name = input.value.trim().toUpperCase();
+			if (!name) return;
+
+			const idx = data.schools.length;
+			const id = "s" + Date.now();
+			data.schools.push({
+				id,
+				name,
+				color: SCHOOL_COLORS[idx % SCHOOL_COLORS.length],
+				bg: SCHOOL_BGS[idx % SCHOOL_BGS.length],
+			});
+
+			initTimeSettings();
+			input.value = "";
+			saveData();
+			renderSchools();
+			renderSchedule();
+			renderTimeSettings();
+			showToast(`✅ Đã thêm trường ${name}`, "success");
+		}
+
+		function deleteSchool(id) {
+			if (!confirm("Xoá trường này? Lịch của trường sẽ bị xoá.")) return;
+			data.schools = data.schools.filter((s) => s.id !== id);
+			// Clean schedule
+			Object.keys(data.schedule).forEach((k) => {
+				if (k.includes(`_${id}`)) delete data.schedule[k];
+			});
+			saveData();
+			renderSchools();
+			renderSchedule();
+			renderTimeSettings();
+		}
+
+		// ── TIME SETTINGS ──
+		function renderTimeSettings() {
+			const grid = document.getElementById("timeSettingsGrid");
+			let html = "";
+
+			// Period 1
+			html += `
+    <div class="time-row">
+      <label>Tiết 1 (tất cả)</label>
+      <input type="time" value="${data.timeSettings.period1Start}"
+        onchange="updateTime('period1Start', this.value)">
+      <span style="color:var(--text-muted);font-size:0.8rem">→ ${getEndTime(data.timeSettings.period1Start)}</span>
+    </div>`;
+
+			// Period 2 per school
+			html += `<div style="margin-top:8px"><strong style="font-size:0.85rem;color:var(--text-secondary)">Tiết 2 (theo trường)</strong></div>`;
+			data.schools.forEach((s) => {
+				const key = `p2_${s.id}`;
+				const val = data.timeSettings[key] || "14:35";
+				html += `
+      <div class="time-row">
+        <label><span class="time-school-label" style="color:${s.color}">${s.name}</span></label>
+        <input type="time" value="${val}" onchange="updateTime('${key}', this.value, true)">
+        <span style="color:var(--text-muted);font-size:0.8rem">→ ${getEndTime(val)}</span>
+      </div>`;
+			});
+
+			// Period 3 per school
+			html += `<div style="margin-top:8px"><strong style="font-size:0.85rem;color:var(--text-secondary)">Tiết 3 (tự tính hoặc chỉnh tay)</strong></div>`;
+			data.schools.forEach((s) => {
+				const key = `p3_${s.id}`;
+				const val = data.timeSettings[key] || "15:30";
+				html += `
+      <div class="time-row">
+        <label><span class="time-school-label" style="color:${s.color}">${s.name}</span></label>
+        <input type="time" value="${val}" onchange="updateTime('${key}', this.value)">
+        <span style="color:var(--text-muted);font-size:0.8rem">→ ${getEndTime(val)}</span>
+        <button class="btn btn-secondary btn-sm" onclick="autoCalcP3('${s.id}')">Tự tính</button>
+      </div>`;
+			});
+
+			grid.innerHTML = html;
+		}
+
+		function updateTime(key, value, recalcP3) {
+			data.timeSettings[key] = value;
+			if (recalcP3) {
+				// Auto-recalculate period 3 for same school
+				const schoolId = key.replace("p2_", "");
+				const p2End = timeToMins(value) + PERIOD_DURATION;
+				data.timeSettings[`p3_${schoolId}`] = minsToTime(
+					p2End + BREAK_DURATION,
+				);
+			}
+			saveData();
+			renderTimeSettings();
+			renderSchedule();
+		}
+
+		function autoCalcP3(schoolId) {
+			const p2Start = data.timeSettings[`p2_${schoolId}`];
+			if (!p2Start) return;
+			const p2End = timeToMins(p2Start) + PERIOD_DURATION;
+			data.timeSettings[`p3_${schoolId}`] = minsToTime(p2End + BREAK_DURATION);
+			saveData();
+			renderTimeSettings();
+			renderSchedule();
+			showToast("✅ Đã tính lại tiết 3", "success");
+		}
+
+		// ── TOAST ──
+		function showToast(msg, type = "success") {
+			const container = document.getElementById("toastContainer");
+			const toast = document.createElement("div");
+			toast.className = `toast toast-${type}`;
+			toast.textContent = msg;
+			container.appendChild(toast);
+			setTimeout(() => {
+				toast.style.opacity = "0";
+				toast.style.transform = "translateX(40px)";
+				toast.style.transition = "0.3s";
+			}, 2500);
+			setTimeout(() => toast.remove(), 3000);
+		}
+
+		// ── EXPORT / RESET ──
+		function exportData() {
+			saveData();
+			showToast("💾 Dữ liệu đã được lưu vào trình duyệt", "success");
+		}
+
+		function resetAll() {
+			if (!confirm("Xoá toàn bộ dữ liệu? Không thể hoàn tác!")) return;
+			if (!confirm("Bạn chắc chắn chứ?")) return;
+			localStorage.removeItem("vn_english_schedule");
+			data = defaultData();
+			saveData();
+			renderAll();
+			showToast("Đã xoá toàn bộ", "error");
+		}
+
+		// ── TAB SWITCHING ──
+		document.querySelectorAll(".nav-tab").forEach((tab) => {
+			tab.addEventListener("click", () => {
+				document
+					.querySelectorAll(".nav-tab")
+					.forEach((t) => t.classList.remove("active"));
+				document
+					.querySelectorAll(".panel")
+					.forEach((p) => p.classList.remove("active"));
+				tab.classList.add("active");
+				document
+					.getElementById(`panel-${tab.dataset.tab}`)
+					.classList.add("active");
+			});
+		});
+
+		// ── KEYBOARD ──
+		document.addEventListener("keydown", (e) => {
+			if (e.key === "Escape") {
+				closeCellModal();
+				closeStaffModal();
+			}
+		});
+
+		// Close modals on overlay click
+		document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+			overlay.addEventListener("click", (e) => {
+				if (e.target === overlay) {
+					closeCellModal();
+					closeStaffModal();
+				}
+			});
+		});
+
+		// Enter key for add inputs
+		document
+			.getElementById("newTeacherName")
+			.addEventListener("keydown", (e) => {
+				if (e.key === "Enter") addStaff("teacher");
+			});
+		document.getElementById("newTAName").addEventListener("keydown", (e) => {
+			if (e.key === "Enter") addStaff("ta");
+		});
+		document
+			.getElementById("newSchoolName")
+			.addEventListener("keydown", (e) => {
+				if (e.key === "Enter") addSchool();
+			});
+
+		// ── INIT ──
+		function renderAll() {
+			renderSchedule();
+			renderStaff("teacher");
+			renderStaff("ta");
+			renderSchools();
+			renderTimeSettings();
+		}
+
+		loadData();
+		renderAll();
+		</script>
+	</body>
+</html>

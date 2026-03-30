@@ -1,0 +1,78 @@
+{
+	"nav": {
+		"brand": "Lịch Dạy Học",
+		"schedule": "Lịch dạy",
+		"teachers": "Giáo Viên",
+		"tas": "Trợ Giảng",
+		"settings": "Cài đặt giờ",
+		"schools": "Trường",
+		"save": "Lưu",
+		"reset": "Xoá tất cả"
+	},
+	"schedule": {
+		"title": "Lịch dạy",
+		"currentWeek": "Tuần hiện tại",
+		"weekPlus": "Tuần +{n}",
+		"weekMinus": "Tuần -{n}",
+		"today": "Hôm nay",
+		"timeCol": "Giờ học",
+		"period": "Tiết {n}",
+		"days": ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"],
+		"emptySchool": "Chưa có trường nào",
+		"emptySchoolSub": "Vào tab \"Trường\" để thêm trường mới",
+		"conflictBadge": "⚠️ TRÙNG"
+	},
+	"cell": {
+		"editTitle": "Tiết {period} · {school} · {day}",
+		"teacher": "Giáo viên",
+		"ta": "Trợ giảng",
+		"note": "Ghi chú",
+		"notePlaceholder": "VD: Mock Test, Nghỉ, Dạy bù...",
+		"selectTeacher": "-- Chọn giáo viên --",
+		"selectTA": "-- Chọn trợ giảng --",
+		"delete": "Xoá",
+		"cancel": "Huỷ",
+		"save": "Lưu"
+	},
+	"teachers": {
+		"title": "Danh sách Giáo Viên",
+		"placeholder": "Tên giáo viên mới...",
+		"add": "+ Thêm",
+		"edit": "Sửa Giáo Viên",
+		"noData": "Chưa có giáo viên nào"
+	},
+	"tas": {
+		"title": "Danh sách Trợ Giảng",
+		"placeholder": "Tên trợ giảng mới...",
+		"add": "+ Thêm",
+		"edit": "Sửa Trợ Giảng",
+		"noData": "Chưa có trợ giảng nào"
+	},
+	"settings": {
+		"title": "Cài đặt giờ học",
+		"subtitle": "Mỗi tiết 35 phút. Tiết 3 = Tiết 2 kết thúc + 20 phút nghỉ (có thể chỉnh tay).",
+		"period1Label": "Tiết 1 (tất cả)",
+		"period2Label": "Tiết 2 (theo trường)",
+		"period3Label": "Tiết 3 (chỉnh tay hoặc tự tính)",
+		"autoCalc": "Tự tính"
+	},
+	"schools": {
+		"title": "Quản lý Trường",
+		"placeholder": "Tên viết tắt (VD: TN, TA, AT1)...",
+		"add": "+ Thêm trường",
+		"deleteConfirm": "Xoá trường này? Lịch của trường sẽ bị xoá."
+	},
+	"toast": {
+		"saved": "✅ Đã lưu",
+		"added": "✅ Đã thêm {name}",
+		"deleted": "Đã xoá ô",
+		"updated": "✅ Đã cập nhật",
+		"conflict": "⚠️ Trùng lịch!",
+		"p3Recalc": "✅ Đã tính lại tiết 3",
+		"resetAll": "Đã xoá toàn bộ"
+	},
+	"staff": {
+		"name": "Tên",
+		"color": "Màu"
+	}
+}
