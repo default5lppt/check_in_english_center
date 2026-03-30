@@ -15,12 +15,14 @@ interface LangContextValue {
 	lang: Lang;
 	setLang: (lang: Lang) => void;
 	t: (key: string, vars?: Record<string, string>) => string;
+	tArr: (key: string) => string[];
 }
 
 const LangContext = createContext<LangContextValue>({
 	lang: "vi",
 	setLang: () => undefined,
 	t: (key) => key,
+	tArr: () => [],
 });
 
 export function LangProvider({ children }: { children: React.ReactNode }) {
@@ -54,8 +56,21 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
 		return val.replace(/\{(\w+)\}/g, (_, k: string) => vars[k] ?? `{${k}}`);
 	};
 
+	const tArr = (key: string): string[] => {
+		const parts = key.split(".");
+		let val: unknown = messages[lang];
+		for (const part of parts) {
+			if (typeof val === "object" && val !== null) {
+				val = (val as Record<string, unknown>)[part];
+			} else {
+				return [];
+			}
+		}
+		return Array.isArray(val) ? (val as string[]) : [];
+	};
+
 	return (
-		<LangContext.Provider value={{ lang, setLang, t }}>
+		<LangContext.Provider value={{ lang, setLang, t, tArr }}>
 			{children}
 		</LangContext.Provider>
 	);

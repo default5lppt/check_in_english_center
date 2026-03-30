@@ -59,7 +59,7 @@ export function ScheduleTable({
 	schoolTimings,
 	onCellClick,
 }: ScheduleTableProps) {
-	const { t } = useLang();
+	const { t, tArr } = useLang();
 
 	// Build O(1) lookup map
 	const sessionMap = new Map<string, Session>();
@@ -103,7 +103,7 @@ export function ScheduleTable({
 		}
 	}
 
-	const days = t("schedule.days") as unknown as string[];
+	const days = tArr("schedule.days");
 
 	return (
 		<div
@@ -126,9 +126,7 @@ export function ScheduleTable({
 							{t("schedule.timeCol")}
 						</th>
 						{[0, 1, 2, 3, 4].map((dayIdx) => {
-							const dayLabel = Array.isArray(days)
-								? (days[dayIdx] ?? `Day ${dayIdx + 1}`)
-								: `Day ${dayIdx + 1}`;
+							const dayLabel = days[dayIdx] ?? `Thứ ${dayIdx + 2}`;
 							const date = new Date(weekStart);
 							date.setDate(date.getDate() + dayIdx);
 							const dateLabel = `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}`;
@@ -180,9 +178,7 @@ export function ScheduleTable({
 									const key = `${weekStart}-${dayIdx}-${periodIdx}-${school.id}`;
 									const session = sessionMap.get(key) ?? null;
 									const isConflict = conflictKeys.has(key);
-									const dayLabel = Array.isArray(days)
-										? (days[dayIdx] ?? `Day ${dayIdx + 1}`)
-										: `Day ${dayIdx + 1}`;
+									const dayLabel = days[dayIdx] ?? `Thứ ${dayIdx + 2}`;
 									return (
 										<ScheduleCell
 											conflictLabel={t("schedule.conflictBadge")}
