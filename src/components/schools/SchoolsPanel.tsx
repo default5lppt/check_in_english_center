@@ -46,7 +46,7 @@ function EditSchoolModal({ school, onClose, onSave }: EditSchoolModalProps) {
 	if (!school) return null;
 
 	const handleSave = () => {
-		const trimmed = name.trim().toUpperCase();
+		const trimmed = name.trim();
 		if (!trimmed) return;
 		const color = SCHOOL_PALETTE[colorIdx] ?? "#3b82f6";
 		const bg = SCHOOL_BG_PALETTE[colorIdx] ?? "#dbeafe";
@@ -84,7 +84,7 @@ function EditSchoolModal({ school, onClose, onSave }: EditSchoolModalProps) {
 					<input
 						className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2"
 						id="school-name"
-						onChange={(e) => setName(e.target.value.toUpperCase())}
+						onChange={(e) => setName(e.target.value)}
 						onKeyDown={(e) => e.key === "Enter" && handleSave()}
 						ref={inputRef}
 						style={{ border: "1px solid var(--border)" }}
@@ -208,7 +208,7 @@ export function SchoolsPanel() {
 	});
 
 	const handleAdd = () => {
-		const name = inputName.trim().toUpperCase();
+		const name = inputName.trim();
 		if (!name) return;
 		const schools = schoolsQuery.data ?? [];
 		const idx = schools.length % SCHOOL_PALETTE.length;
@@ -303,7 +303,7 @@ export function SchoolsPanel() {
 				<div className="flex gap-2">
 					<input
 						className="flex-1 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2"
-						onChange={(e) => setInputName(e.target.value.toUpperCase())}
+						onChange={(e) => setInputName(e.target.value)}
 						onKeyDown={(e) => e.key === "Enter" && handleAdd()}
 						placeholder={t("schools.placeholder")}
 						style={{
